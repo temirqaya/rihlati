@@ -175,6 +175,9 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;al
 .cv-go{margin-top:clamp(8px,2vh,18px)}
 .cv-author{margin-top:clamp(6px,1.4vh,12px);font-size:13px;color:var(--ink-soft);font-weight:700}
 .tocover{font:inherit;font-weight:800;font-size:13px;border:0;background:none;color:var(--ink-soft);cursor:pointer;text-decoration:underline;align-self:flex-start}
+.mute{font-size:20px;line-height:1;border:2px solid var(--line);background:var(--paper);border-radius:999px;width:40px;height:40px;cursor:pointer;padding:0}
+.mute:focus-visible{outline:4px solid var(--gold);outline-offset:3px}
+.maptop{align-self:stretch;display:flex;justify-content:space-between;align-items:center}
 #fx{position:fixed;inset:0;pointer-events:none;z-index:9}
 @media (max-width:760px){.stones{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (max-width:560px){#mapA,#mapM{display:none}.letterbox{min-width:0}.big{font-size:clamp(110px,22vh,200px)}.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.tip{display:none}.hero svg{height:clamp(110px,22vh,200px)}.mnemo{font-size:16px}}
@@ -201,7 +204,7 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;al
   </div>
 
   <div id="map" hidden>
-    <button class="tocover" id="toCover">← Обложка</button>
+    <div class="maptop"><button class="tocover" id="toCover">← Обложка</button><button class="mute" type="button"></button></div>
     <div class="maphead">
       <span id="mapA"></span>
       <div><span class="ar">رِحْلَتِي مَعَ الْقُرْآنِ</span><h1>Моё путешествие к чтению Корана</h1><p>Выбери букву, и Адам с Марьям начнут урок</p></div>
@@ -217,7 +220,7 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;al
     <header>
       <div class="title"><button class="mapbtn" id="toMap">← Карта</button><span class="ar" id="tAr"></span><span id="tRu"></span></div>
       <div class="path" id="path"></div>
-      <div class="stars" id="stars" aria-label="Звёздочки"></div>
+      <div class="row" style="gap:8px"><div class="stars" id="stars" aria-label="Звёздочки"></div><button class="mute" type="button"></button></div>
     </header>
     <main id="screens"></main>
     <footer>
@@ -242,6 +245,29 @@ const g = t => `<span class="g" style="transform:translateY(${sh(t)})">${t}</spa
 const shuffle = a => { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
 const byCh = Object.fromEntries(LET.map(l=>[l.ch,l]));
 
+
+// ---------- sound effects (synthesised, no files) ----------
+let MUTE = false; try { MUTE = localStorage.getItem('rihlati-mute') === '1'; } catch(e){}
+let AC = null;
+function ac(){ if(!AC){ const C = window.AudioContext || window.webkitAudioContext; if(!C) return null; AC = new C(); } if(AC.state === 'suspended') AC.resume(); return AC; }
+function tone(f, t0, d, type, vol, f2){ const a = ac(); if(!a) return; const o = a.createOscillator(), g = a.createGain(), t = a.currentTime + t0;
+  o.type = type || 'sine'; o.frequency.setValueAtTime(f, t); if(f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol || .18, t + .015); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+  o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + d + .05); }
+const SND = {
+  ok:     () => { tone(784,0,.18,'sine',.16); tone(1175,.09,.28,'sine',.14); },
+  no:     () => { tone(260,0,.22,'triangle',.12,190); },
+  pop:    () => { tone(900,0,.09,'sine',.2,300); tone(1500,.02,.05,'triangle',.06); },
+  boing:  () => { tone(330,0,.25,'sine',.12,520); },
+  star:   () => { [1047,1319,1568,2093].forEach((f,i)=>tone(f,i*.07,.35,'sine',.1)); },
+  magic:  () => { [880,1109,1319,1760,2217].forEach((f,i)=>tone(f,i*.05,.3,'triangle',.07)); },
+  page:   () => { tone(520,0,.08,'sine',.05,640); },
+  tap:    () => { tone(660,0,.06,'sine',.06); },
+  fanfare:() => { [[523,0],[659,.12],[784,.24],[1047,.4]].forEach(([f,t])=>{ tone(f,t,.45,'triangle',.1); tone(f*2,t,.3,'sine',.04); }); }
+};
+function sfx(n){ if(MUTE || !SND[n]) return; try { SND[n](); } catch(e){} }
+function drawMute(){ $$('.mute').forEach(b => { b.textContent = MUTE ? '🔇' : '🔊'; b.setAttribute('aria-label', MUTE ? 'Включить звук' : 'Выключить звук'); }); }
+document.addEventListener('click', e => { const b = e.target.closest('.mute'); if(!b) return; MUTE = !MUTE; try { localStorage.setItem('rihlati-mute', MUTE?'1':'0'); } catch(_){} drawMute(); if(!MUTE) sfx('tap'); });
 // ---------- progress (per browser) ----------
 let SAVE = {};
 try { SAVE = JSON.parse(localStorage.getItem('rihlati-stars')||'{}') || {}; } catch(e) { SAVE = {}; }
@@ -250,12 +276,12 @@ function store(){ try { localStorage.setItem('rihlati-stars', JSON.stringify(SAV
 // ---------- map ----------
 $('#mapA').innerHTML = CH.a_wave; $('#mapM').innerHTML = CH.m_wave;
 $('#cvKids').innerHTML = CH.a_wave + CH.m_wave;
-$('#cvGo').onclick = () => { location.hash = 'map'; };
+$('#cvGo').onclick = () => { sfx('magic'); location.hash = 'map'; };
 $('#toCover').onclick = () => { location.hash = 'cover'; };
 function drawMap(){
   $('#stones').innerHTML = LET.map((l,i)=>{ const n = SAVE[l.ch]||0;
     return `<button class="stone ${n>=5?'done':''}" data-i="${i}" aria-label="Буква ${l.ru}"><span class="num">${i+1}</span><span class="l">${g(l.ch)}</span><span class="n">${l.ru}</span><span class="st">${n?Array.from({length:5},(_,k)=>`<span class="${k<n?'on':'off'}">${STAR}</span>`).join(''):''}</span></button>`; }).join('');
-  $$('.stone').forEach(b => b.onclick = () => { location.hash = 'l-' + (+b.dataset.i + 1); });
+  $$('.stone').forEach(b => b.onclick = () => { sfx('tap'); location.hash = 'l-' + (+b.dataset.i + 1); });
 }
 
 // ---------- lesson ----------
@@ -345,14 +371,14 @@ function buildLesson(i){
 function drawStars(el){ el.innerHTML = STEPS.map(s=>`<span class="${got.has(s)?'on':'off'}" data-st="${s}">${STAR}</span>`).join(''); }
 function award(step){
   if(got.has(step)) return;
-  got.add(step); drawStars($('#stars'));
+  got.add(step); drawStars($('#stars')); sfx('star');
   const el = $(`#stars [data-st="${step}"]`); el && el.classList.add('pop');
   SAVE[L.ch] = Math.max(SAVE[L.ch]||0, got.size); store();
   confetti();
 }
 function go(i){
   i = Math.max(0, Math.min(N-1, i));
-  leave(cur); cur = i;
+  if(i !== cur) sfx('page'); leave(cur); cur = i;
   $$('#screens section').forEach(s => s.classList.toggle('show', +s.dataset.s === i));
   $$('#path b').forEach((b,k) => { b.className = k<i ? 'done' : (k===i ? 'now' : ''); });
   $('#prev').disabled = i===0; $('#next').disabled = i===N-1;
@@ -363,21 +389,21 @@ $('#next').onclick = () => go(cur+1);
 $('#toMap').onclick = () => { location.hash = 'map'; };
 document.addEventListener('keydown', e => { if($('#lesson').hidden) return; if(e.key==='ArrowRight') go(cur+1); if(e.key==='ArrowLeft') go(cur-1); });
 
-function bounceEl(el){ el.classList.remove('bounce'); void el.offsetWidth; el.classList.add('bounce'); }
-function shakeEl(el){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
+function bounceEl(el){ sfx('boing'); el.classList.remove('bounce'); void el.offsetWidth; el.classList.add('bounce'); }
+function shakeEl(el){ sfx('no'); el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
 
 function wire(){
   $$('[data-go]').forEach(b => b.onclick = () => go(+b.dataset.go));
   // meet
   const sw = $('#swap');
-  $('#addDot').onclick = () => { sw.classList.add('dot'); $('#addDot').hidden = true; $('#meetMore').hidden = false; $('#meetText').textContent = 'Вот так! Получилась буква:'; $('#meetBubble').textContent = 'Нажми на букву, она подпрыгнет!'; };
+  $('#addDot').onclick = () => { sfx('magic'); sw.classList.add('dot'); $('#addDot').hidden = true; $('#meetMore').hidden = false; $('#meetText').textContent = 'Вот так! Получилась буква:'; $('#meetBubble').textContent = 'Нажми на букву, она подпрыгнет!'; };
   sw.onclick = () => bounceEl(sw);
   sw.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); bounceEl(sw); } };
   $('#say').onclick = () => { bounceEl(sw); $('#meetBubble').textContent = `${L.ru}! Машаллах, как громко и красиво!`; confetti(40); };
   // which
   $$('#which .card').forEach(c => c.onclick = () => {
     const h = $('#whichHint');
-    if(c.dataset.c === L.ch){ c.classList.add('ok'); h.style.color='var(--sage)'; h.innerHTML = `Правильно! Это буква <b>${L.ru}</b>.`; award(2); }
+    if(c.dataset.c === L.ch){ sfx('ok'); c.classList.add('ok'); h.style.color='var(--sage)'; h.innerHTML = `Правильно! Это буква <b>${L.ru}</b>.`; award(2); }
     else { shakeEl(c); h.style.color='var(--rose)'; h.innerHTML = wrongText(c.dataset.c); }
   });
   // trace
@@ -410,7 +436,7 @@ function buildGrid(){
   $$('#grid .tile').forEach(t => t.onclick = () => {
     if(t.classList.contains('ok')) return;
     const h = $('#findHint');
-    if(t.dataset.c === L.ch){ t.classList.add('ok'); n++; $('#fcount').textContent = n; h.textContent='';
+    if(t.dataset.c === L.ch){ sfx('ok'); t.classList.add('ok'); n++; $('#fcount').textContent = n; h.textContent='';
       if(n===4){ h.style.color='var(--sage)'; h.textContent = 'Все четыре нашлись! Машаллах!'; award(3); } }
     else { shakeEl(t); h.style.color='var(--rose)'; h.innerHTML = wrongText(t.dataset.c); }
   });
@@ -454,8 +480,8 @@ function spawn(){
   f.appendChild(b); const s = b.offsetWidth;
   const o = {el:b, x:Math.random()*(W-s), y:H+4, v:(H/7.5)*(0.8+Math.random()*0.5), ph:Math.random()*6, hit};
   b.onpointerdown = e => { e.preventDefault();
-    if(o.hit){ caught++; $('#ccount').textContent = caught; b.classList.add('boom'); o.dead = true; setTimeout(()=>b.remove(), 360); miniBurst(e.clientX, e.clientY); }
-    else { b.classList.add('no'); } };
+    if(o.hit){ caught++; $('#ccount').textContent = caught; sfx('pop'); b.classList.add('boom'); o.dead = true; setTimeout(()=>b.remove(), 360); miniBurst(e.clientX, e.clientY); }
+    else { sfx('no'); b.classList.add('no'); } };
   balls.push(o);
 }
 function frame(t){ const dt = lastT ? Math.min(.05,(t-lastT)/1000) : 0; lastT = t;
@@ -480,7 +506,7 @@ function enter(i){
   if(i===4) (document.fonts ? document.fonts.load('100px "Amiri Quran"') : Promise.resolve()).then(()=>requestAnimationFrame(sizeCanvas), sizeCanvas);
   if(i===5) resetCatch();
   if(i===6) resetFlash();
-  if(i===7){ drawStars($('#finalStars')); confetti(120); }
+  if(i===7){ drawStars($('#finalStars')); confetti(120); setTimeout(()=>sfx('fanfare'), 250); }
 }
 function leave(i){ if(i===5) stopCatch(); }
 
@@ -511,6 +537,7 @@ function run(){ if(fxRaf) return; const step = () => { fc.clearRect(0,0,innerWid
   fc.globalAlpha=1; if(parts.length) fxRaf=requestAnimationFrame(step); else { fxRaf=null; fc.clearRect(0,0,innerWidth,innerHeight); } };
   fxRaf = requestAnimationFrame(step); }
 
+drawMute();
 route();
 })();
 </script>
