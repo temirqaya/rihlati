@@ -158,6 +158,23 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;al
 .navbtn.next{background:var(--sage);border-color:var(--sage);color:#fff;box-shadow:0 4px 0 #6F8E6B}
 .navbtn:disabled{opacity:.35;cursor:default}
 .tip{font-size:13px;color:var(--ink-soft);text-align:center;flex:1}
+
+/* ---------- cover ---------- */
+#cover{position:relative;z-index:1;flex:1;min-height:0;display:flex;align-items:stretch;justify-content:center;padding-block:4px}
+.cv-card{position:relative;flex:1;max-width:620px;background:var(--sky2);border-radius:26px;box-shadow:0 10px 40px rgba(83,102,155,.15);display:flex;flex-direction:column;align-items:center;text-align:center;padding:clamp(14px,3.5vh,36px) 18px clamp(12px,2.5vh,26px);overflow:hidden}
+.cv-card::before{content:"";position:absolute;inset:12px;border:1.5px solid #D8B26A;border-radius:18px;pointer-events:none}
+.cv-moon{width:clamp(34px,6vh,54px);height:auto}
+.cv-ar{font-family:var(--f-ar);color:var(--indigo);font-size:clamp(34px,7vh,64px);line-height:2;margin-top:-.35em}
+.cv-line{width:90px;height:2px;background:#D8B26A;margin:clamp(8px,1.6vh,16px) 0 clamp(6px,1.5vh,14px)}
+.cv-ru{font-weight:900;font-size:clamp(20px,3.6vh,32px);line-height:1.25;text-wrap:balance}
+.cv-sub{margin-top:clamp(6px,1.4vh,12px);font-size:clamp(11px,1.5vh,14px);letter-spacing:.24em;text-transform:uppercase;color:#B8914A;font-weight:800}
+.cv-stage{position:relative;flex:1;min-height:0;width:min(100%,380px);margin-top:clamp(6px,1.5vh,16px);display:flex;align-items:flex-end;justify-content:center}
+.cv-arch{position:absolute;inset:0;width:100%;height:100%}
+.cv-kids{position:relative;display:flex;align-items:flex-end;justify-content:center;gap:4px;height:78%;width:92%}
+.cv-kids svg{height:100%;width:auto;max-width:50%;object-fit:contain}
+.cv-go{margin-top:clamp(8px,2vh,18px)}
+.cv-author{margin-top:clamp(6px,1.4vh,12px);font-size:13px;color:var(--ink-soft);font-weight:700}
+.tocover{font:inherit;font-weight:800;font-size:13px;border:0;background:none;color:var(--ink-soft);cursor:pointer;text-decoration:underline;align-self:flex-start}
 #fx{position:fixed;inset:0;pointer-events:none;z-index:9}
 @media (max-width:760px){.stones{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (max-width:560px){#mapA,#mapM{display:none}.letterbox{min-width:0}.big{font-size:clamp(110px,22vh,200px)}.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.tip{display:none}.hero svg{height:clamp(110px,22vh,200px)}.mnemo{font-size:16px}}
@@ -167,7 +184,24 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;al
 <div class="app">
   <div class="clouds"><div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div></div>
 
-  <div id="map">
+  <div id="cover" hidden>
+    <div class="cv-card">
+      <svg class="cv-moon" viewBox="0 0 60 60" aria-hidden="true"><circle cx="28" cy="30" r="20" fill="#D8B26A"/><circle cx="37" cy="25" r="17" fill="var(--sky2)"/><path d="M46 37l1.6 3.4 3.7.5-2.7 2.6.7 3.7-3.3-1.8-3.3 1.8.7-3.7-2.7-2.6 3.7-.5z" fill="#D8B26A"/></svg>
+      <div class="cv-ar" lang="ar" dir="rtl">رِحْلَتِي مَعَ الْقُرْآنِ</div>
+      <div class="cv-line"></div>
+      <div class="cv-ru">Моё путешествие<br>к чтению Священного Корана</div>
+      <div class="cv-sub">Онлайн-уроки для детей</div>
+      <div class="cv-stage">
+        <svg class="cv-arch" viewBox="0 0 300 380" preserveAspectRatio="none" aria-hidden="true"><path d="M20 380 L20 150 Q20 90 110 60 Q140 48 150 14 Q160 48 190 60 Q280 90 280 150 L280 380" fill="none" stroke="#C9A15B" stroke-width="2.5"/><path d="M36 380 L36 156 Q36 104 118 76 Q142 66 150 40 Q158 66 182 76 Q264 104 264 156 L264 380" fill="none" stroke="#C9A15B" stroke-width="1" opacity=".6"/></svg>
+        <div class="cv-kids" id="cvKids"></div>
+      </div>
+      <button class="btn cv-go" id="cvGo">Начать путешествие →</button>
+      <div class="cv-author">Эльмаза Темиркалиева · 2026</div>
+    </div>
+  </div>
+
+  <div id="map" hidden>
+    <button class="tocover" id="toCover">← Обложка</button>
     <div class="maphead">
       <span id="mapA"></span>
       <div><span class="ar">رِحْلَتِي مَعَ الْقُرْآنِ</span><h1>Моё путешествие к чтению Корана</h1><p>Выбери букву, и Адам с Марьям начнут урок</p></div>
@@ -215,6 +249,9 @@ function store(){ try { localStorage.setItem('rihlati-stars', JSON.stringify(SAV
 
 // ---------- map ----------
 $('#mapA').innerHTML = CH.a_wave; $('#mapM').innerHTML = CH.m_wave;
+$('#cvKids').innerHTML = CH.a_wave + CH.m_wave;
+$('#cvGo').onclick = () => { location.hash = 'map'; };
+$('#toCover').onclick = () => { location.hash = 'cover'; };
 function drawMap(){
   $('#stones').innerHTML = LET.map((l,i)=>{ const n = SAVE[l.ch]||0;
     return `<button class="stone ${n>=5?'done':''}" data-i="${i}" aria-label="Буква ${l.ru}"><span class="num">${i+1}</span><span class="l">${g(l.ch)}</span><span class="n">${l.ru}</span><span class="st">${n?Array.from({length:5},(_,k)=>`<span class="${k<n?'on':'off'}">${STAR}</span>`).join(''):''}</span></button>`; }).join('');
@@ -452,8 +489,9 @@ function buildAndGo(i){ buildLesson(i); go(0); }
 function route(){
   const m = /^#l-(\d+)$/.exec(location.hash);
   const i = m ? +m[1]-1 : -1;
-  if(i>=0 && i<LET.length){ $('#map').hidden = true; $('#lesson').hidden = false; buildAndGo(i); }
-  else { stopCatch(); $('#lesson').hidden = true; $('#map').hidden = false; drawMap(); }
+  if(i>=0 && i<LET.length){ $('#map').hidden = true; $('#cover').hidden = true; $('#lesson').hidden = false; buildAndGo(i); }
+  else if(location.hash === '#map'){ stopCatch(); $('#lesson').hidden = true; $('#cover').hidden = true; $('#map').hidden = false; drawMap(); }
+  else { stopCatch(); $('#lesson').hidden = true; $('#map').hidden = true; $('#cover').hidden = false; }
 }
 addEventListener('hashchange', route);
 
