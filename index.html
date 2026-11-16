@@ -301,7 +301,52 @@ const SND = {
 };
 function sfx(n){ if(MUTE || !SND[n]) return; try { SND[n](); } catch(e){} }
 function drawMute(){ $$('.mute').forEach(b => { b.textContent = MUTE ? '🔇' : '🔊'; b.setAttribute('aria-label', MUTE ? 'Включить звук' : 'Выключить звук'); }); }
-document.addEventListener('click', e => { const b = e.target.closest('.mute'); if(!b) return; MUTE = !MUTE; try { localStorage.setItem('rihlati-mute', MUTE?'1':'0'); } catch(_){} drawMute(); if(!MUTE) sfx('tap'); });
+document.addEventListener('click', e => { const b = e.target.closest('.mute'); if(!b) return; MUTE = !MUTE; try { localStorage.setItem('rihlati-mute', MUTE?'1':'0'); } catch(_){} drawMute(); if(!MUTE) sfx('tap'); ambFor(); });
+
+// ---------- нежный фон: звуки природы (ветерок, ручеёк, птички) ----------
+let AMB = null, AMB_ON = false, birdT = null;
+function ambBuild(){
+  const a = ac(); if(!a) return null;
+  const master = a.createGain(); master.gain.value = 0.0001; master.connect(a.destination);
+  const noise = (sec) => { const b = a.createBuffer(1, a.sampleRate*sec, a.sampleRate), d = b.getChannelData(0); let last = 0;
+    for(let i=0;i<d.length;i++){ const w = Math.random()*2-1; last = (last + 0.02*w)/1.02; d[i] = last*3.5; } return b; };
+  const white = (sec) => { const b = a.createBuffer(1, a.sampleRate*sec, a.sampleRate), d = b.getChannelData(0); for(let i=0;i<d.length;i++) d[i] = Math.random()*2-1; return b; };
+  // ветерок
+  const w = a.createBufferSource(); w.buffer = noise(6); w.loop = true;
+  const wf = a.createBiquadFilter(); wf.type = 'lowpass'; wf.frequency.value = 500;
+  const wg = a.createGain(); wg.gain.value = 0.35;
+  const lfo = a.createOscillator(), lg = a.createGain(); lfo.frequency.value = 0.08; lg.gain.value = 0.2; lfo.connect(lg); lg.connect(wg.gain);
+  w.connect(wf); wf.connect(wg); wg.connect(master); w.start(); lfo.start();
+  // ручеёк
+  const r = a.createBufferSource(); r.buffer = white(4); r.loop = true;
+  const rf = a.createBiquadFilter(); rf.type = 'bandpass'; rf.frequency.value = 2200; rf.Q.value = 0.8;
+  const rg = a.createGain(); rg.gain.value = 0.025;
+  const rl = a.createOscillator(), rlg = a.createGain(); rl.frequency.value = 3.1; rlg.gain.value = 0.012; rl.connect(rlg); rlg.connect(rg.gain);
+  r.connect(rf); rf.connect(rg); rg.connect(master); r.start(); rl.start();
+  return {a, master};
+}
+function bird(){
+  if(!AMB || !AMB_ON) return;
+  const {a, master} = AMB, t0 = a.currentTime + 0.05, n = 2 + Math.floor(Math.random()*4), base = 2600 + Math.random()*1600;
+  for(let i=0;i<n;i++){ const o = a.createOscillator(), gg = a.createGain(), t = t0 + i*(0.11 + Math.random()*0.06);
+    o.type = 'sine'; o.frequency.setValueAtTime(base*(0.9+Math.random()*0.25), t); o.frequency.exponentialRampToValueAtTime(base*(1.25+Math.random()*0.3), t+0.07);
+    gg.gain.setValueAtTime(0.0001, t); gg.gain.exponentialRampToValueAtTime(0.05, t+0.015); gg.gain.exponentialRampToValueAtTime(0.0001, t+0.09);
+    o.connect(gg); gg.connect(master); o.start(t); o.stop(t+0.12); }
+  birdT = setTimeout(bird, 2500 + Math.random()*5000);
+}
+function ambient(on){
+  on = on && !MUTE;
+  if(on === AMB_ON) return;
+  if(on && !AMB){ AMB = ambBuild(); if(!AMB) return; }
+  if(!AMB) return;
+  AMB_ON = on; const g2 = AMB.master.gain, t = AMB.a.currentTime;
+  g2.cancelScheduledValues(t); g2.setValueAtTime(Math.max(g2.value, 0.0001), t);
+  g2.exponentialRampToValueAtTime(on ? 0.6 : 0.0001, t + (on ? 2 : 1));   // плавное появление и затихание
+  clearTimeout(birdT); if(on) birdT = setTimeout(bird, 1200);
+}
+// фон звучит на обложке, на карте и на последнем экране урока
+function ambFor(){ const onLesson = !$('#lesson').hidden; ambient(!onLesson || cur === 7); }
+document.addEventListener('pointerdown', () => { if(ac()) ambFor(); }, {once:true});
 // ---------- progress (per browser) ----------
 let SAVE = {};
 try { SAVE = JSON.parse(localStorage.getItem('rihlati-stars')||'{}') || {}; } catch(e) { SAVE = {}; }
@@ -428,6 +473,7 @@ function go(i){
   $$('#path b').forEach((b,k) => { b.className = k<i ? 'done' : (k===i ? 'now' : ''); });
   $('#prev').disabled = i===0; $('#next').disabled = i===N-1;
   enter(i);
+  if(AC) ambFor();
 }
 $('#prev').onclick = () => go(cur-1);
 $('#next').onclick = () => go(cur+1);
@@ -942,7 +988,7 @@ function route(){
   else if(location.hash === '#map'){ stopCatch(); $('#lesson').hidden = true; $('#cover').hidden = true; $('#map').hidden = false; drawMap(); }
   else { stopCatch(); $('#lesson').hidden = true; $('#map').hidden = true; $('#cover').hidden = false; }
 }
-addEventListener('hashchange', route);
+addEventListener('hashchange', () => { route(); if(AC) ambFor(); });
 
 // ---------- confetti ----------
 const fx = $('#fx'), fc = fx.getContext('2d'); let parts = [], fxRaf = null;
