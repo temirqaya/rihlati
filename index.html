@@ -177,22 +177,23 @@ h2{margin:0;font-weight:900;font-size:clamp(22px,3.4vw,38px);text-wrap:balance}
 .mhand b{font-size:15px;font-weight:900;color:#fff;background:var(--rose);border-radius:999px;padding:2px 10px;line-height:1.5;margin-top:2px;box-shadow:0 3px 8px rgba(0,0,0,.15)}
 @keyframes mhB{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 
-#about{min-height:100vh;display:flex;justify-content:center;padding:16px 16px 40px}
-.ab-card{position:relative;width:min(100%,640px);background:var(--paper);border-radius:32px;padding:26px 22px 30px;text-align:center;box-shadow:0 10px 30px rgba(92,64,51,.12);border:2px solid var(--line);margin-top:8px}
-.ab-card::before{content:'';position:absolute;inset:10px;border:1.5px solid var(--gold);border-radius:24px;pointer-events:none;opacity:.7}
-.ab-back{position:absolute;left:18px;top:16px}
-.ab-ar{font-family:var(--f-ar);font-size:clamp(32px,9vw,48px);color:var(--indigo);line-height:2;margin-top:18px}
-.ab-card h1{margin:0 0 6px;font-size:clamp(24px,6.5vw,32px);color:var(--ink)}
-.ab-kids{display:flex;justify-content:center;gap:4px;margin:4px 0 10px}
-.ab-kids svg{width:clamp(100px,28vw,140px);height:auto}
-.ab-card p{font-size:clamp(16px,4.3vw,19px);line-height:1.55;color:var(--ink);margin:0 auto 12px;max-width:30em}
-.ab-ded{margin:20px auto 14px;background:linear-gradient(180deg,var(--rose-l),#FFF7F2);border-radius:26px;padding:18px 18px 8px;max-width:30em;position:relative}
-.ab-heart{font-size:34px;line-height:1;margin-top:-34px}
-.ab-ded h2{margin:6px 0 6px;font-size:22px;color:var(--rose)}
+#about{min-height:100svh;display:flex;justify-content:center;align-items:center;padding:6px 12px}
+.ab-card{position:relative;width:min(100%,560px);background:var(--paper);border-radius:28px;padding:14px 16px 16px;text-align:center;box-shadow:0 10px 30px rgba(92,64,51,.12);border:2px solid var(--line)}
+.ab-card::before{content:'';position:absolute;inset:7px;border:1.5px solid var(--gold);border-radius:22px;pointer-events:none;opacity:.7}
+.ab-back{position:absolute;left:14px;top:12px;font-size:13px}
+.ab-ar{font-family:var(--f-ar);font-size:clamp(24px,7vw,34px);color:var(--indigo);line-height:1.9;margin-top:14px}
+.ab-card h1{margin:0 0 2px;font-size:clamp(20px,5.6vw,26px);color:var(--ink)}
+.ab-kids{display:flex;justify-content:center;margin:0 0 4px}
+.ab-kids svg{width:clamp(70px,20vw,96px);height:auto}
+.ab-card p{font-size:clamp(14px,3.8vw,16px);line-height:1.45;color:var(--ink);margin:0 auto 8px;max-width:32em;text-wrap:balance}
+.ab-ded{margin:16px auto 8px;background:linear-gradient(180deg,var(--rose-l),#FFF7F2);border-radius:22px;padding:12px 14px 4px;max-width:32em}
+.ab-heart{font-size:26px;line-height:1;margin-top:-26px}
+.ab-ded h2{margin:4px 0 4px;font-size:18px;color:var(--rose)}
 .ab-ded p{font-weight:700}
-.ab-dua{font-family:var(--f-ar);font-size:clamp(24px,6.6vw,32px);color:var(--indigo);line-height:2.1;margin-top:6px}
-.ab-dua-t{font-size:15px!important;color:var(--ink-soft)!important;font-style:italic}
-.ab-name{font-size:13px;font-weight:700;color:var(--ink-soft);opacity:.85;margin:14px 0 18px}
+.ab-dua{font-family:var(--f-ar);font-size:clamp(20px,5.6vw,26px);color:var(--indigo);line-height:2;margin-top:2px}
+.ab-dua-t{font-size:13px!important;color:var(--ink-soft)!important;font-style:italic;margin-bottom:4px!important}
+.ab-name{font-size:12px;font-weight:700;color:var(--ink-soft);opacity:.85;margin:6px 0 10px}
+.ab-card .btn{padding:.55em 1.6em}
 .me-about{margin-top:12px;font-size:15px}
 .mstep{align-items:center}
 .ms-svg svg{width:min(70vw,260px);height:auto}
@@ -830,10 +831,9 @@ const GT = {
   found: (k, t) => `Нашли: <b>${k}</b> из ${t}`, pairs: (k, t) => `Пар: <b>${k}</b> из ${t}`,
   reset: '↺ Начать заново', resetQ: 'Все звёздочки сотрутся, и путешествие начнётся сначала. Начать заново?', yes: 'Да, начать заново', no: 'Нет',
   about: {btn: '💗 Об этом приложении', back: '← Карта', title: 'Для чего это приложение', toMap: 'На карту', author: 'Эльмаза Темиркалиева',
-    text: ['Это приложение создано, чтобы дети с радостью и любовью делали первые шаги к чтению Священного Корана.',
-           'Вместе с Зейнеб и Юсуфом малыши знакомятся с арабскими буквами, учатся произносить их правильно и красиво, играют, читают первые слова и суры — и радуются каждой звёздочке.',
+    text: ['Это приложение создано, чтобы дети с радостью и любовью делали первые шаги к чтению Священного Корана вместе с Зейнеб и Юсуфом.',
            'Пусть каждая прочитанная буква станет светом для ребёнка, а это приложение — садака джария для всех, кто учит и учится с ним.'],
-    dedT: 'Посвящается', ded: 'В первую очередь — моему сыночку Юсуфу, моему вдохновителю. Пусть Аллах сделает тебя другом Корана и наполнит твоё сердце его светом.',
+    dedT: 'Посвящается', ded: 'В первую очередь — моему сыночку&nbsp;Юсуфу, моему вдохновителю. Пусть Аллах сделает тебя другом Корана и&nbsp;наполнит твоё сердце его&nbsp;светом.',
     dua: '«О Аллах, прими от нас и сделай это знанием полезным»'},
   tap: 'Нажми!', nextLetter: 'Следующая буква →', nextLesson: 'Следующий урок →',
   done: 'Машаллах! Получилось!', start: 'старт', pathHint: 'Нажимай на соседнюю клетку с буквой', countHint: 'Выбери число под каждым рядом', again: 'Посчитай ещё раз!'
