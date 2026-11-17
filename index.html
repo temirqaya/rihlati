@@ -1564,8 +1564,8 @@ function enterP(i){
     let page = 0; const per = s.per || 6, pages = Math.ceil(s.items.length/per);
     const draw = () => { const part = s.items.slice(page*per, page*per+per);
       $(`#pr${k}`).innerHTML = part.map((t,j) => { const ru = s.ru ? s.ru[page*per+j] : '';
-        return `<button class="tile ${s.cls==='q'?'qw':''}">${s.cls==='q' ? `<span class="arin q">${t}</span>` : g(t)}${ru?`<small class="pr-ru" hidden>${ru}</small>`:''}</button>`; }).join('');
-      $$(`#pr${k} .tile`).forEach(t => t.onclick = () => { bounceEl(t); const r = t.querySelector('.pr-ru'); if(r) r.hidden = false; });
+        return `<button class="tile ${s.cls==='q'?'qw':''}${(window.VOICE||{})[t]?' hasv':''}" data-t="${t}">${s.cls==='q' ? `<span class="arin q">${t}</span>` : g(t)}${ru?`<small class="pr-ru" hidden>${ru}</small>`:''}</button>`; }).join('');
+      $$(`#pr${k} .tile`).forEach(t => t.onclick = () => { bounceEl(t); say(t.dataset.t); const r = t.querySelector('.pr-ru'); if(r) r.hidden = false; });
       $(`#prN${k}`).textContent = pages > 1 ? `${page+1} из ${pages}` : '';
       $(`#prNext${k}`).textContent = page < pages-1 ? 'Дальше' : 'Прочитали!'; };
     $(`#prNext${k}`).onclick = () => { if(page < pages-1){ page++; draw(); } else { if(s.star) award(i); go(i+1); } };
