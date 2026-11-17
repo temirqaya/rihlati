@@ -872,7 +872,7 @@ function wire(){
   setTimeout(() => { if((window.VOICE||{})[L.ch === 'ا' ? 'أَ' : L.ch + 'َ']){ $('#swap').classList.add('hasv'); $('#say').classList.add('sayv'); } }, 50);
   sw.onclick = () => { bounceEl(sw); sayL(); };
   sw.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); bounceEl(sw); } };
-  $('#say').onclick = () => { bounceEl(sw); sayL(); $('#meetBubble').textContent = `${L.ru}! Машаллах, как громко и красиво!`; confetti(40); };
+  $('#say').onclick = () => { bounceEl(sw); const VN = window.VOICE_N || {}; if(VN[L.ch]){ try { if(VA) VA.pause(); VA = new Audio(VN[L.ch]); if(!MUTE) VA.play().catch(()=>{}); } catch(e){} } else sayL(); $('#meetBubble').textContent = `${L.ru}! Машаллах, как громко и красиво!`; confetti(40); };
   // which
   $$('#which .card').forEach(c => c.onclick = () => {
     const h = $('#whichHint');
