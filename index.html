@@ -140,7 +140,7 @@ h2{margin:0;font-weight:900;font-size:clamp(22px,3.4vw,38px);text-wrap:balance}
 .grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(6px,1.4vw,16px);width:min(100%,820px);direction:rtl}
 .tile{font-family:var(--f-ar);font-size:clamp(40px,8vh,84px);line-height:1.4;background:var(--paper);border:3px solid var(--line);border-radius:22px;cursor:pointer;color:var(--indigo);transition:.2s}
 .tile.ok{background:var(--sage-l);border-color:var(--sage);transform:scale(.94)}
-.reset{margin-top:26px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;max-width:420px;margin-left:auto;margin-right:auto}
+.reset{margin:6px auto 14px;background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:14px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;max-width:420px;margin-left:auto;margin-right:auto}
 .reset .lead{font-size:16px}
 .reset .row{justify-content:center}
 /* ---------- игры из книги (шаг 3 урока буквы) ---------- */
@@ -380,7 +380,8 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;al
   </div>
 
   <div id="map" hidden>
-    <div class="maptop"><button class="tocover" id="toCover">← Обложка</button><button class="mute" type="button"></button></div>
+    <div class="maptop"><button class="tocover" id="toCover">← Обложка</button><span style="display:flex;gap:8px;align-items:center"><button class="tocover" id="rsGo"></button><button class="mute" type="button"></button></span></div>
+    <div class="reset" id="resetBox" hidden></div>
     <div class="maphead">
       <span id="mapA"></span>
       <div><span class="ar">رِحْلَتِي مَعَ الْقُرْآنِ</span><h1>Моё путешествие к чтению Корана</h1><p>Выбери букву, и Зейнеб с Юсуфом начнут урок</p></div>
@@ -397,7 +398,6 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;al
     <div class="section-t"><span class="dot" style="background:#3F8F86"></span>Раздел 5. Мадд — длинные звуки</div>
     <div class="stones h4" id="stonesM"></div>
     <div id="pSecs" style="display:contents"></div>
-    <div class="reset" id="resetBox"></div>
     <div class="map-end">
       <div class="me-ded">Посвящается моему вдохновителю — сыну Юсуфу</div>
       <div class="me-ar">اللَّهُمَّ تَقَبَّلْ مِنَّا وَاجْعَلْهُ عِلْمًا نَافِعًا</div>
@@ -519,9 +519,9 @@ $('#cvGo').onclick = () => { sfx('magic'); location.hash = 'map'; };
 $('#toCover').onclick = () => { location.hash = 'cover'; };
 function drawReset(){
   const box = $('#resetBox'); if(!box) return;
-  box.innerHTML = `<button class="btn soft" id="rsGo">${GT.reset}</button>`;
+  box.hidden = true; $('#rsGo').textContent = GT.reset;
   $('#rsGo').onclick = () => {
-    box.innerHTML = `<p class="lead">${GT.resetQ}</p><div class="row"><button class="btn rose" id="rsYes">${GT.yes}</button><button class="btn soft" id="rsNo">${GT.no}</button></div>`;
+    box.hidden = false; box.innerHTML = `<p class="lead">${GT.resetQ}</p><div class="row"><button class="btn rose" id="rsYes">${GT.yes}</button><button class="btn soft" id="rsNo">${GT.no}</button></div>`;
     $('#rsYes').onclick = () => { SAVE = {}; store(); sfx('magic'); drawMap(); };
     $('#rsNo').onclick = drawReset;
   };
