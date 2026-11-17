@@ -140,6 +140,9 @@ h2{margin:0;font-weight:900;font-size:clamp(22px,3.4vw,38px);text-wrap:balance}
 .grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(6px,1.4vw,16px);width:min(100%,820px);direction:rtl}
 .tile{font-family:var(--f-ar);font-size:clamp(40px,8vh,84px);line-height:1.4;background:var(--paper);border:3px solid var(--line);border-radius:22px;cursor:pointer;color:var(--indigo);transition:.2s}
 .tile.ok{background:var(--sage-l);border-color:var(--sage);transform:scale(.94)}
+.reset{margin-top:26px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;max-width:420px;margin-left:auto;margin-right:auto}
+.reset .lead{font-size:16px}
+.reset .row{justify-content:center}
 /* ---------- игры из книги (шаг 3 урока буквы) ---------- */
 .gbox{width:min(100%,640px);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;direction:rtl;border-radius:28px;position:relative}
 .gi{font-family:var(--f-ar);border:none;cursor:pointer;position:relative;color:var(--ink);background:none;padding:0;display:flex;align-items:center;justify-content:center;line-height:1.4;transition:transform .2s,background .2s,opacity .3s}
@@ -408,6 +411,7 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;al
     <div class="section-t"><span class="dot" style="background:#3F8F86"></span>Болюк 5. Медд — узун сеслер</div>
     <div class="stones h4" id="stonesM"></div>
     <div id="pSecs" style="display:contents"></div>
+    <div class="reset" id="resetBox"></div>
     <div class="map-end">
       <div class="me-ded">Манъа ильхам берген огълум Юсуфкъа багъышлайым</div>
       <div class="me-ar">اللَّهُمَّ تَقَبَّلْ مِنَّا وَاجْعَلْهُ عِلْمًا نَافِعًا</div>
@@ -517,15 +521,27 @@ function ambFor(){ const onLesson = !$('#lesson').hidden; ambient(!onLesson || c
 document.addEventListener('pointerdown', () => { if(ac()) ambFor(); }, {once:true});
 // ---------- progress (per browser) ----------
 let SAVE = {};
-try { SAVE = JSON.parse(localStorage.getItem('rihlati-stars')||'{}') || {}; } catch(e) { SAVE = {}; }
-function store(){ try { localStorage.setItem('rihlati-stars', JSON.stringify(SAVE)); } catch(e){} }
+// у каждого языка свои звёздочки
+const SKEY = 'rihlati-stars' + (/\/qt\//.test(location.pathname) ? '-qt' : /\/tr\//.test(location.pathname) ? '-tr' : '-ru');
+try { SAVE = JSON.parse(localStorage.getItem(SKEY)||'{}') || {}; } catch(e) { SAVE = {}; }
+function store(){ try { localStorage.setItem(SKEY, JSON.stringify(SAVE)); } catch(e){} }
 
 // ---------- map ----------
 $('#mapA').innerHTML = CH.a_wave; $('#mapM').innerHTML = CH.m_wave;
 $('#cvKids').innerHTML = CH.a_wave + CH.m_wave;
 $('#cvGo').onclick = () => { sfx('magic'); location.hash = 'map'; };
 $('#toCover').onclick = () => { location.hash = 'cover'; };
+function drawReset(){
+  const box = $('#resetBox'); if(!box) return;
+  box.innerHTML = `<button class="btn soft" id="rsGo">${GT.reset}</button>`;
+  $('#rsGo').onclick = () => {
+    box.innerHTML = `<p class="lead">${GT.resetQ}</p><div class="row"><button class="btn rose" id="rsYes">${GT.yes}</button><button class="btn soft" id="rsNo">${GT.no}</button></div>`;
+    $('#rsYes').onclick = () => { SAVE = {}; store(); sfx('magic'); drawMap(); };
+    $('#rsNo').onclick = drawReset;
+  };
+}
 function drawMap(){
+  drawReset();
   $('#stones').innerHTML = LET.map((l,i)=>{ const n = SAVE[l.ch]||0;
     return `<button class="stone ${n>=5?'done':''}" data-i="${i}" aria-label="Буква ${l.ru}"><span class="num">${i+1}</span><span class="l">${g(l.ch)}</span><span class="n">${l.ru}</span><span class="st">${n?Array.from({length:5},(_,k)=>`<span class="${k<n?'on':'off'}">${STAR}</span>`).join(''):''}</span></button>`; }).join('');
   $$('#stones .stone').forEach(b => b.onclick = () => { sfx('tap'); location.hash = 'l-' + (+b.dataset.i + 1); });
@@ -706,6 +722,7 @@ const GT = {
   pair: a => 'Найди пару! Нажми на две одинаковые буквы',
   path: a => `Дорожка домой! Шагай по буквам ${a} от старта к домику`,
   found: (k, t) => `Нашли: <b>${k}</b> из ${t}`, pairs: (k, t) => `Пар: <b>${k}</b> из ${t}`,
+  reset: '↺ Начать заново', resetQ: 'Все звёздочки сотрутся, и путешествие начнётся сначала. Начать заново?', yes: 'Да, начать заново', no: 'Нет',
   done: 'Машаллах! Получилось!', start: 'старт', pathHint: 'Нажимай на соседнюю клетку с буквой', countHint: 'Выбери число под каждым рядом', again: 'Посчитай ещё раз!'
 };
 Object.assign(GT, {
@@ -718,6 +735,7 @@ Object.assign(GT, {
   pair: a => 'Чифтини тап! Эки айны арифке бас',
   path: a => `Эвге ёл! Тек ${a} арифлери боюнджа адымла — башлангъычтан эвчикке`,
   found: (k, t) => `Тапылды: <b>${k}</b> / ${t}`, pairs: (k, t) => `Чифтлер: <b>${k}</b> / ${t}`,
+  reset: '↺ Янъыдан башла', resetQ: 'Бутюн йылдызчыкълар силинир ве сеяат башындан башлар. Янъыдан башлайыкъмы?', yes: 'Эбет, янъыдан башла', no: 'Ёкъ',
   done: 'Машаллах! Олды!', start: 'башла', pathHint: 'Арифли къоншу клеткагъа бас', countHint: 'Эр сыранынъ тюбюнде сайыны сайла', again: 'Даа бир кере сай!'
 });
 const STARSVG = '<svg viewBox="0 0 100 100"><path d="M50 3 L62 36 L97 37 L69 58 L79 93 L50 73 L21 93 L31 58 L3 37 L38 36Z" stroke-linejoin="round"/></svg>';
