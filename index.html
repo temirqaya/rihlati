@@ -281,10 +281,34 @@ h2{margin:0;font-weight:900;font-size:clamp(22px,3.4vw,38px);text-wrap:balance}
 .tb-back{position:absolute;left:12px;top:10px;font-size:13px}
 .tb-card h1{margin:18px 0 0;font-size:clamp(22px,6vw,28px)}
 .tb-hint{margin:0 0 6px;font-size:13px;color:var(--ink-soft)}
+.tb-tabs{display:flex;gap:4px;justify-content:center;margin:6px 0 8px}
+.tb-tab{flex:1;border:2px solid var(--line);background:#fff;border-radius:12px;padding:6px 2px;font:inherit;font-weight:800;font-size:13px;color:var(--ink);cursor:pointer}
+.tb-tab.on{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.tb-rules{display:grid;grid-template-columns:1fr 1fr;gap:6px;text-align:center}
+.tb-r{background:#fff;border:2px solid var(--line);border-radius:14px;padding:6px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.tb-r.wide{grid-column:1/-1}
+.tb-r small{display:block;width:100%}
+.tb-r .rw .ar{font-size:21px;line-height:1.25;white-space:nowrap;direction:rtl;display:block;transform:translateY(-10px)}
+.tb-r.wide .rw{padding:2px 8px}
+.tb-r b{font-size:14px;color:var(--rose)}
+.tb-ra{font-family:var(--f-ar);font-size:24px;line-height:1.7;color:var(--indigo)}
+.tb-r small{font-size:12px;line-height:1.35;color:var(--ink)}
+.tb-r .rw{box-sizing:border-box;min-height:28px;display:flex;justify-content:space-between;align-items:center;gap:6px;width:100%;border-top:1px dashed var(--line);padding-top:2px}
+.tb-r .rw b{font-size:12px;color:var(--ink)}
+.tb-r .ar{font-family:var(--f-ar);font-size:16px;color:var(--indigo)}
+.tb-jw{min-height:92px;padding-bottom:14px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-family:var(--f-ar);font-size:52px;line-height:1.6;color:var(--indigo);background:#fff;border:2px solid var(--line);border-radius:16px;margin:0 0 6px;overflow-wrap:anywhere}
+.tb-js{font-size:13px;color:var(--ink-soft);margin:4px 0 6px;min-height:58px}
+.tb-jl{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;font-family:var(--f-ar);font-size:28px;line-height:1.6;color:var(--rose)}
+.tb-kb{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;direction:rtl;margin-bottom:6px}
+.tb-k{border:2px solid var(--line);border-radius:10px;background:#fff;font-family:var(--f-ar);font-size:22px;line-height:1;height:42px;padding:0 0 9px;color:var(--ink);cursor:pointer}
+.tb-kb.h{grid-template-columns:repeat(8,1fr)}
+.tb-kb.h .tb-k{background:#F4EEFA;color:var(--rose);font-size:24px;height:46px}
+.tb-jbt{display:flex;gap:8px;justify-content:center}
+.tb-jbt .btn{margin-top:0}
 .tb-blk{margin:0 0 8px}
 .tb-bh{display:inline-block;min-width:40%;background:var(--indigo);color:#fff;font-weight:900;font-size:14px;border-radius:10px;padding:3px 12px;margin-bottom:4px}
 .tb-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;direction:rtl}
-.tb-c{position:relative;border:2px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;padding:0;height:clamp(30px,calc((100svh - 236px) / 12 - 4px),54px);display:flex;align-items:center;justify-content:center;font-family:var(--f-ar);font-size:clamp(19px,calc((100svh - 236px) / 24),28px);line-height:1;color:var(--indigo);overflow:visible}
+.tb-c{position:relative;border:2px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;padding:0;height:clamp(28px,calc((100svh - 300px) / 12 - 4px),54px);display:flex;align-items:center;justify-content:center;font-family:var(--f-ar);font-size:clamp(18px,calc((100svh - 300px) / 24),28px);line-height:1;color:var(--indigo);overflow:visible}
 .tb-grid .hasv::after{font-size:8px;top:1px;right:2px}
 .tb-card .btn{margin-top:8px}
 .btn.song{margin-bottom:10px}.btn.song.on{background:var(--gold-l);border-color:var(--gold)}
@@ -725,16 +749,36 @@ function drawReset(){
     $('#rsNo').onclick = drawReset;
   };
 }
+let TBTAB = 0, TBJ = 'كَتَبَ';
 function drawTable(){
-  const T = GT.table, V = window.VOICE || {}, VN = window.VOICE_N || {};
+  const T = GT.table, V = window.VOICE || {};
   const syl = (c, h) => c === 'ا' ? ({a:'أَ', i:'إِ', u:'أُ'})[h] : c + ({a:'َ', i:'ِ', u:'ُ'})[h];
+  const tabs = `<div class="tb-tabs">${T.tabs.map((t, j) => `<button class="tb-tab${j === TBTAB ? ' on' : ''}" data-j="${j}">${t}</button>`).join('')}</div>`;
+  let body = '';
+  if(TBTAB === 0) body = `<p class="tb-hint">${T.hint}</p>` + ['a','i','u'].map((h, hi) => `<div class="tb-blk"><div class="tb-bh">${T.cols[hi+2]}</div><div class="tb-grid">${LET.map(L => { const s = syl(L.ch, h);
+      return `<button class="tb-c${V[s]?' hasv':''}" data-v="${s}">${g(s)}</button>`; }).join('')}</div></div>`).join('');
+  else if(TBTAB === 1) body = `<div class="tb-rules">${T.rules.map(([t, a, d]) => `<div class="tb-r${d.includes('rw') ? ' wide' : ''}"><b>${t}</b><div class="tb-ra" lang="ar" dir="rtl">${a}</div><small>${d}</small></div>`).join('')}</div>`;
+  else body = `<p class="tb-hint">${T.join.hint}</p><div class="tb-jw" lang="ar" dir="rtl" id="tbJw"></div>
+    <div class="tb-js"><span>${T.join.alone}</span> <div class="tb-jl" lang="ar" dir="rtl" id="tbJl"></div></div>
+    <div class="tb-kb">${LET.map(L => `<button class="tb-k" data-k="${L.ch}">${L.ch}</button>`).join('')}</div>
+    <div class="tb-kb h">${['َ','ِ','ُ','ْ','ّ','ً','ٍ','ٌ'].map(h => `<button class="tb-k hk" data-k="${h}">ب${h}</button>`).join('')}</div>
+    <div class="tb-jbt"><button class="btn soft" id="tbClr">${T.join.clr}</button><button class="btn soft" id="tbDel">⌫</button></div>`;
   $('#table').innerHTML = `<div class="tb-card"><button class="tocover tb-back" id="tbBack">${T.back}</button>
-    <h1>${T.title}</h1><p class="tb-hint">${T.hint}</p>
-    ${['a','i','u'].map((h, hi) => `<div class="tb-blk"><div class="tb-bh">${T.cols[hi+2]}</div><div class="tb-grid">${LET.map(L => { const s = syl(L.ch, h);
-      return `<button class="tb-c${V[s]?' hasv':''}" data-v="${s}">${g(s)}</button>`; }).join('')}</div></div>`).join('')}
+    <h1>${T.title}</h1>${tabs}${body}
     <button class="btn" id="tbMap">${GT.about.toMap}</button></div>`;
   $('#tbBack').onclick = $('#tbMap').onclick = () => { sfx('tap'); location.hash = 'map'; };
+  $$('#table .tb-tab').forEach(b => b.onclick = () => { TBTAB = +b.dataset.j; sfx('tap'); drawTable(); scrollTo(0, 0); });
   $$('#table .tb-c').forEach(b => b.onclick = () => { bounceEl(b); if(!say(b.dataset.v)) sfx('pop'); });
+  if(TBTAB === 2){
+    const show = () => { const units = TBJ.match(/[ء-ي][ً-ْ]*/g) || [];
+      $('#tbJw').textContent = TBJ || '…'; $('#tbJl').innerHTML = units.map(u => `<span>${u}</span>`).join(''); };
+    $$('#table .tb-k').forEach(b => b.onclick = () => { const k = b.dataset.k, mark = /[ً-ْ]/.test(k);
+      if(mark && !TBJ) return; if(TBJ.length > 14 && !mark) return;
+      TBJ += k; sfx('pop'); show(); });
+    $('#tbDel').onclick = () => { TBJ = TBJ.slice(0, -1); sfx('tap'); show(); };
+    $('#tbClr').onclick = () => { TBJ = ''; sfx('tap'); show(); };
+    show();
+  }
 }
 function drawAbout(){
   const A = GT.about;
@@ -956,7 +1000,7 @@ const GT = {
     basketH: 'Корзинки! В какой домик живёт буква?', memH: 'Найди пару! Открой две одинаковые карточки',
     eaten: (k, t) => `Съела: <b>${k}</b> из ${t}`, round: (k, t) => `Вагончик <b>${k}</b> из ${t}`, sorted: (k, t) => `Разложено: <b>${k}</b> из ${t}`, pairs: (k, t) => `Пар: <b>${k}</b> из ${t}`,
     notThis: a => `Это другая буква — ищи ${a}!`, wrongZone: n => `Эта буква живёт в домике «${n}»`, throat: 'Горлышко', tongue: 'Язычок', lips: 'Губки'},
-  table: {btn: '🔤 Таблица букв', title: 'Таблица букв', hint: 'Нажми на клетку — услышишь, как она читается', back: '← Карта', cols: ['Буква', '', 'Фатха', 'Касра', 'Дамма']},
+  table: {btn: '🔤 Таблица букв', title: 'Таблица букв', hint: 'Нажми на клетку — услышишь, как она читается', back: '← Карта', cols: ['Буква', '', 'Фатха', 'Касра', 'Дамма'], tabs: ['🔤 Буквы', '📘 Правила', '🔗 Соединяем'], join: {hint: 'Нажимай на буквы — увидишь, как они соединяются', alone: 'По отдельности:', clr: 'Очистить'}, rules: [["Фатха", "بَ", "Чёрточка сверху — звук «а»: ба"], ["Касра", "بِ", "Чёрточка снизу — звук «и»: би"], ["Дамма", "بُ", "Маленький вав сверху — звук «у»: бу"], ["Сукун", "أَبْ", "Кружок: буква спит, без огласовки — аб"], ["Шадда", "أَبَّ", "Буква-двойняшка — абба"], ["Танвин", "بًا بٍ بٌ", "Двойная огласовка — бан, бин, бун"], ["Мадд", "بَا بِي بُو", "<span class=\"ar\">ا و ي</span> тянут звук на 2 счёта"], ["Формы буквы", "ب بـ ـبـ ـب", "отдельно · в начале · в середине · в конце"], ["Одиночки", "ا د ذ ر ز و", "Не соединяются со следующей буквой"], ["Солнечные буквы", "الشَّمْسُ", "Лям прячется, буква удваивается"], ["Лунные буквы", "الْقَمَرُ", "Лям видно и слышно"], ["Калькаля", "ق ط ب ج د", "С сукуном буква подпрыгивает, как мячик"], ["Толстые буквы", "خ ص ض غ ط ق ظ", "Звучат «полным ртом»"], ["Гунна", "نّ مّ", "Тянем носом на 2 счёта"], ["Нун с сукуном", "نْ", "<div class=\"rw\"><b>Изхар</b><span class=\"ar\">ء ه ع ح غ خ</span></div><div class=\"rw\"><b>Идгам</b><span class=\"ar\">ي ر م ل و ن</span></div><div class=\"rw\"><b>Икляб</b><span class=\"ar\">ب</span></div><div class=\"rw\"><b>Ихфа</b><span>остальные 15</span></div>"], ["Мим с сукуном", "مْ", "<div class=\"rw\"><b>Ихфа губной</b><span class=\"ar\">ب</span></div><div class=\"rw\"><b>Идгам</b><span class=\"ar\">م</span></div><div class=\"rw\"><b>Изхар губной</b><span>остальные</span></div>"], ["Длинный мадд", "آ", "<div class=\"rw\"><b>Естественный</b><span>2 счёта</span></div><div class=\"rw\"><b>Слитный</b><span>4–5 счётов</span></div><div class=\"rw\"><b>Обязательный</b><span>6 счётов</span></div>"]]},
   song: '🎵 Послушать песенку',
   tap: 'Нажми!', nextLetter: 'Следующая буква →', nextLesson: 'Следующий урок →',
   done: 'Машаллах! Получилось!', start: 'старт', pathHint: 'Нажимай на соседнюю клетку с буквой', countHint: 'Выбери число под каждым рядом', again: 'Посчитай ещё раз!'
