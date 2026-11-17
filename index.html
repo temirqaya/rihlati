@@ -389,7 +389,6 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;al
 
   <div id="cover" hidden>
     <div class="cv-card">
-      <svg class="cv-moon" viewBox="0 0 60 60" aria-hidden="true"><circle cx="28" cy="30" r="20" fill="#D8B26A"/><circle cx="37" cy="25" r="17" fill="var(--sky2)"/><path d="M46 37l1.6 3.4 3.7.5-2.7 2.6.7 3.7-3.3-1.8-3.3 1.8.7-3.7-2.7-2.6 3.7-.5z" fill="#D8B26A"/></svg>
       <div class="cv-ar" lang="ar" dir="rtl">رِحْلَتِي مَعَ الْقُرْآنِ</div>
       <div class="cv-line"></div>
       <div class="cv-ru">Моё путешествие<br>к чтению Священного Корана</div>
@@ -1459,7 +1458,7 @@ route();
   if(seen) return;
   const sp = document.createElement('div'); sp.id = 'splash';
   const stars = [[8,12],[86,9],[16,74],[90,68],[50,6],[70,30],[24,36],[78,88],[10,90],[60,80]].map(([x,y],k)=>`<span class="sp-star" style="left:${x}%;top:${y}%;animation-delay:${(k*0.37)%2.4}s">✦</span>`).join('');
-  sp.innerHTML = stars + `<div class="sp-basm" lang="ar" dir="rtl">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>` + '<svg class="sp-moon" viewBox="0 0 60 60" aria-hidden="true"><circle cx="28" cy="30" r="20" fill="#D8B26A"/><circle cx="37" cy="25" r="17" fill="var(--sky2)"/></svg>'
+  sp.innerHTML = stars + `<div class="sp-basm" lang="ar" dir="rtl">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>`
     + `<div class="sp-ar" lang="ar" dir="rtl">رِحْلَتِي مَعَ الْقُرْآنِ</div><div class="sp-t">${$('.cv-ru').innerHTML}</div>`
     + `<div class="sp-kids">${CH.m_wave}${CH.a_wave}</div><div class="sp-dots"><i></i><i></i><i></i></div>`;
   document.body.appendChild(sp);
