@@ -701,7 +701,7 @@ function say(txt){ const V = window.VOICE || {}, src = V[(txt||'').trim()]; if(!
   try { if(VA) VA.pause(); VA = new Audio(src); VA.volume = MUTE ? 0 : 1; if(!MUTE) VA.play().catch(()=>{}); } catch(e){} return true; }
 function markVoice(root){ const V = window.VOICE || {}; (root||document).querySelectorAll('.tile,.card').forEach(e => { if(V[e.textContent.trim()]) e.classList.add('hasv'); }); }
 function drawMute(){ $$('.mute').forEach(b => { b.textContent = MUTE ? '🔇' : '🔊'; b.setAttribute('aria-label', MUTE ? 'Включить звук' : 'Выключить звук'); }); }
-document.addEventListener('click', e => { const b = e.target.closest('.mute'); if(!b) return; MUTE = !MUTE; try { localStorage.setItem('rihlati-mute', MUTE?'1':'0'); } catch(_){} drawMute(); if(!MUTE) sfx('tap'); ambFor(); });
+document.addEventListener('click', e => { const b = e.target.closest('.mute'); if(!b) return; MUTE = !MUTE; try { localStorage.setItem('rihlati-mute', MUTE?'1':'0'); } catch(_){} drawMute(); if(!MUTE) sfx('tap'); ambFor(); gameMusic(); });
 
 // ---------- нежный фон: пение птичек ----------
 let AMB = null, AMB_ON = false, birdT = null;
@@ -749,6 +749,13 @@ function ambient(on){
 }
 // фон звучит на обложке, на карте и на последнем экране урока
 function ambFor(){ const onLesson = !$('#lesson').hidden; ambient(!onLesson || cur === 7); }
+// тихая музыка в разделе «Игры»
+const MUSBASE = /\/(qt|tr)\//.test(location.pathname) ? '../' : '';
+let GMUS = null;
+function gameMusic(){ const inGames = !$('#lesson').hidden && /^#p/.test(location.hash) && typeof PS !== 'undefined' && PS && PS.id === '11';
+  try { if(inGames && !MUTE){ if(!GMUS){ GMUS = new Audio(MUSBASE + 'audio/games.mp3'); GMUS.loop = true; GMUS.volume = 0.12; } if(GMUS.paused) GMUS.play().catch(()=>{}); }
+    else if(GMUS && !GMUS.paused) GMUS.pause(); } catch(e){} }
+document.addEventListener('pointerdown', () => gameMusic());
 document.addEventListener('pointerdown', () => { if(ac()) ambFor(); }, {once:true});
 // ---------- progress (per browser) ----------
 let SAVE = {};
@@ -1964,7 +1971,7 @@ function route(){
   else if(location.hash === '#map'){ stopCatch(); $('#lesson').hidden = true; $('#cover').hidden = true; $('#map').hidden = false; drawMap(); }
   else { stopCatch(); $('#lesson').hidden = true; $('#map').hidden = true; $('#cover').hidden = false; }
 }
-addEventListener('hashchange', () => { route(); if(AC) ambFor(); });
+addEventListener('hashchange', () => { route(); if(AC) ambFor(); gameMusic(); });
 
 // ---------- confetti ----------
 const fx = $('#fx'), fc = fx.getContext('2d'); let parts = [], fxRaf = null;
