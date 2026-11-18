@@ -1294,8 +1294,13 @@ function route(){
   else if(location.hash === '#about'){ stopCatch(); $('#lesson').hidden = true; $('#cover').hidden = true; $('#map').hidden = true; drawAbout(); $('#about').hidden = false; scrollTo(0,0); }
   else if(location.hash === '#namaz' && NWS.length){ stopCatch(); $('#lesson').hidden = true; $('#cover').hidden = true; $('#map').hidden = true; drawNamaz(); $('#namaz').hidden = false; }
   else if(location.hash === '#map'){ stopCatch(); $('#lesson').hidden = true; $('#cover').hidden = true; $('#map').hidden = false; drawMap(); }
-  else { stopCatch(); $('#lesson').hidden = true; $('#map').hidden = true; $('#cover').hidden = false; }
+  else { stopCatch(); $('#lesson').hidden = true; $('#map').hidden = true; $('#cover').hidden = false;
+    if(location.hash === '#nwcover' && NWS.length) setTimeout(() => { const c = $('#cover'); if(c && c.classList.contains('paged')){ c.scrollTo({left: c.scrollWidth, behavior: 'instant'}); document.body.classList.add('nwpage'); } try { history.replaceState(null, '', '#cover'); } catch(_){} }, 60); }
 }
+// смена языка: остаёмся в мире намаза (обложка намаза, карта или тот же урок)
+document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('.lsw a'); if(!a || a.classList.contains('on')) return;
+  let h = ''; if(document.body.classList.contains('nwpage')) h = '#nwcover'; else if(document.body.classList.contains('nw')) h = location.hash;
+  if(h){ e.preventDefault(); e.stopPropagation(); location.href = a.getAttribute('href').split('#')[0] + h; } }, true);
 addEventListener('hashchange', () => { route(); if(AC) ambFor(); gameMusic(); });
 
 // ---------- confetti ----------
