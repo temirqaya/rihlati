@@ -12,7 +12,7 @@ open('/home/claude/book/Rihlati_onlain_kniga.html','w').write(off)
 
 import hashlib, base64 as _b64, json as _json
 USED = {}
-EXTERNAL_AUDIO = False   # True — звуки отдельными файлами (облегчение сайта, ждёт согласия)
+EXTERNAL_AUDIO = True   # True — звуки отдельными файлами (облегчение сайта, ждёт согласия)
 def urlmap(path, prefix, out):
     if not EXTERNAL_AUDIO: return open(path).read()
     root = os.path.dirname(out) if prefix == '' else os.path.dirname(os.path.dirname(out))
