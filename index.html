@@ -1333,7 +1333,7 @@ function wireSet(){
     $('#spin').onclick = spinWheel;
   }
   $('#newSyl').onclick = () => { TR = C.syl(rnd(UL), hkOf()); sizeCanvas(); };
-  $('#reveal').onclick = () => { const [l,k] = hseq[fr]; $('#answer').textContent = '«' + C.snd(l,k) + '»'; };
+  $('#reveal').onclick = () => { const [l,k] = hseq[fr]; $('#answer').textContent = '«' + C.snd(l,k) + '»'; say(C.syl(l,k)); };
   $('#flashNext').onclick = () => { if(fr < hseq.length-1){ fr++; showHFlash(); } else { award(6); go(7); } };
   $('#catchGo').onclick = () => { if(hk===3) { setCatch(Math.floor(Math.random()*3)); } startCatch(); };
 }
@@ -1383,8 +1383,8 @@ function drawQuiz(){
 }
 function answer(c, ok, k, l){
   const C = SET, h = $('#hqHint');
-  if(ok){ sfx('ok'); c.classList.add('ok'); h.style.color = 'var(--sage)'; h.textContent = 'Правильно! Машаллах!';
-    hround++; if(hround >= 5){ award(3); $('#hqN').textContent = 'Все 5 вопросов!'; } else setTimeout(drawQuiz, 900); }
+  if(ok){ sfx('ok'); c.classList.add('ok'); h.style.color = 'var(--sage)'; h.textContent = 'Правильно! Машаллах!'; setTimeout(() => say(c.textContent.trim()), 250);
+    hround++; if(hround >= 5){ award(3); $('#hqN').textContent = 'Все 5 вопросов!'; } else setTimeout(drawQuiz, 1500); }
   else { shakeEl(c); h.style.color = 'var(--rose)';
     h.innerHTML = l ? `Это «${C.snd(l,k)}» — ${C.V[k].name}. Попробуй ещё!` : `Это <b>${C.V[k].name}</b>: ${C.V[k].where}. Попробуй ещё!`; }
 }
@@ -1403,7 +1403,8 @@ const SKL = [
   {t:'Сукун', icon:'أَبْ'},
   {t:'Шадда', icon:'أَبَّ'}];
 const SK_READ = [ 'بتدرسشفقكلمن'.split(''), 'بتجدرسشصطعقلمن'.split('') ];
-const SK_UL = UL.filter(l => l !== 'ج');            // для «звуковых» вопросов
+const SK_UL0 = UL.filter(l => l !== 'ج');            // для «звуковых» вопросов
+const SKUL = () => SKi===0 ? SK_UL0 : SK_UL0.filter(l => SK_READ[1].includes(l));   // только буквы, у которых есть запись
 const sukS = (l, v) => VOW[v] + l + SUK;              // أَبْ
 const shdS = (l, v) => 'أَ' + l + HV[v].m + SHD;      // أَبَّ  (огласовка + шадда)
 const sukSnd = (l, v) => HV[v].v + TRL[l];            // «аб»
@@ -1504,12 +1505,12 @@ function buildSk(i){
     CLEAD = 'Лопай только шарики, где буква <b>спит</b> — с кружком сукуна';
     CDONE = 'спящие буквы';
     CPICK = () => { const l = rnd(lettersAll), hit = Math.random() < 0.5, v = Math.floor(Math.random()*3); return [hit ? sukS(l,v) : syl(l,v), hit]; };
-    TR = sukS(rnd(SK_UL), Math.floor(Math.random()*3));
+    TR = sukS(rnd(SKUL()), Math.floor(Math.random()*3));
   } else {
     CLEAD = 'Лопай только шарики с <b>двойняшкой</b> — со значком шадды';
     CDONE = 'двойняшки';
     CPICK = () => { const l = rnd(SK_READ[1]), hit = Math.random() < 0.5, v = Math.floor(Math.random()*3); return [hit ? shdS(l,v) : sukS(l,v), hit]; };
-    TR = shdS(rnd(SK_UL), Math.floor(Math.random()*3));
+    TR = shdS(rnd(SKUL()), Math.floor(Math.random()*3));
   }
   wire(); wireS();
 }
@@ -1521,8 +1522,8 @@ function wireS(){
   join.onclick = () => bounceEl(join);
   $('#say').onclick = () => { bounceEl(join); say(SKi===0 ? sukS('ب',0) : shdS('ب',0)); $('#meetBubble').textContent = SKi===0 ? '«аб»! Машаллах!' : '«абба»! Машаллах, как красиво!'; confetti(40); };
   $('#hpageNext').onclick = () => { if(hpage < skPages()-1){ hpage++; drawSkRead(); } else { award(2); go(3); } };
-  $('#newSyl').onclick = () => { const v = Math.floor(Math.random()*3), l = rnd(SK_UL); TR = SKi===0 ? sukS(l,v) : shdS(l,v); sizeCanvas(); };
-  $('#reveal').onclick = () => { const [l,v] = hseq[fr]; $('#answer').textContent = '«' + (SKi===0 ? sukSnd(l,v) : shdSnd(l,v)) + '»'; };
+  $('#newSyl').onclick = () => { const v = Math.floor(Math.random()*3), l = rnd(SKUL()); TR = SKi===0 ? sukS(l,v) : shdS(l,v); sizeCanvas(); };
+  $('#reveal').onclick = () => { const [l,v] = hseq[fr]; $('#answer').textContent = '«' + (SKi===0 ? sukSnd(l,v) : shdSnd(l,v)) + '»'; say(SKi===0 ? sukS(l,v) : shdS(l,v)); };
   $('#flashNext').onclick = () => { if(fr < hseq.length-1){ fr++; showSkFlash(); } else { award(6); go(7); } };
 }
 
@@ -1546,7 +1547,7 @@ function drawSkQuiz(){
     $('#hq').innerHTML = shuffle(opts).map(([t,ok]) => `<button class="card" data-ok="${ok}">${g(t)}</button>`).join('');
     $$('#hq .card').forEach(c => c.onclick = () => skAnswer(c, c.dataset.ok === '1', SKi===0 ? 'Тут нет кружка сукуна. Попробуй ещё!' : 'Тут нет значка шадды. Попробуй ещё!'));
   } else {
-    const l = rnd(SK_UL), t = Math.floor(Math.random()*3), f = SKi===0 ? sukS : shdS, sn = SKi===0 ? sukSnd : shdSnd;
+    const l = rnd(SKUL()), t = Math.floor(Math.random()*3), f = SKi===0 ? sukS : shdS, sn = SKi===0 ? sukSnd : shdSnd;
     $('#hqQ').innerHTML = `Какой слог читается <b>«${sn(l,t)}»</b>?`;
     $('#hq').innerHTML = shuffle([0,1,2]).map(v => `<button class="card" data-v="${v}" data-l="${l}">${g(f(l,v))}</button>`).join('');
     $$('#hq .card').forEach(c => c.onclick = () => skAnswer(c, +c.dataset.v === t, `Это «${sn(l,+c.dataset.v)}». Попробуй ещё!`));
@@ -1554,8 +1555,8 @@ function drawSkQuiz(){
 }
 function skAnswer(c, ok, wrong){
   const h = $('#hqHint');
-  if(ok){ sfx('ok'); c.classList.add('ok'); h.style.color = 'var(--sage)'; h.textContent = 'Правильно! Машаллах!';
-    hround++; if(hround >= 5){ award(3); $('#hqN').textContent = 'Все 5 вопросов!'; } else setTimeout(drawSkQuiz, 900); }
+  if(ok){ sfx('ok'); c.classList.add('ok'); h.style.color = 'var(--sage)'; h.textContent = 'Правильно! Машаллах!'; setTimeout(() => say(c.textContent.trim()), 250);
+    hround++; if(hround >= 5){ award(3); $('#hqN').textContent = 'Все 5 вопросов!'; } else setTimeout(drawSkQuiz, 1500); }
   else { shakeEl(c); h.style.color = 'var(--rose)'; h.textContent = wrong; }
 }
 
@@ -1567,7 +1568,7 @@ function enterS(i){
   if(i===1){ $('#skParts').hidden = false; $('#skJoin').hidden = true; $('#addDot').hidden = false; $('#meetMore').hidden = true; }
   if(i===2){ hpage = 0; drawSkRead(); }
   if(i===3){ hround = 0; drawSkQuiz(); }
-  if(i===6){ hseq = shuffle(Array.from({length:6}, () => [rnd(SK_UL), Math.floor(Math.random()*3)])); fr = 0; showSkFlash(); }
+  if(i===6){ hseq = shuffle(Array.from({length:6}, () => [rnd(SKUL()), Math.floor(Math.random()*3)])); fr = 0; showSkFlash(); }
 }
 
 const SKSVG = '<svg viewBox="0 0 60 70" aria-hidden="true"><rect x="14" y="26" width="32" height="26" rx="8" fill="#EDE3D3"/><circle cx="30" cy="12" r="7" fill="none" stroke="#D9998A" stroke-width="5"/></svg>';
