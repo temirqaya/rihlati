@@ -345,6 +345,9 @@ SG = {'id': '11', 'title': 'Раздел 11. Игры', 'color': '#E0A53B', 'les
   {'title': 'Корзинки', 'icon': '🧺', 'screens': [{'t': 'basket', 'icons': {z: mouth.svg([z], cls='bk-svg') for z in ('throat', 'tongue', 'lips')}, 'star': 1}, FIN('Все буквы разложены по домикам!')]},
   {'title': 'Найди пару', 'icon': '🃏', 'screens': [{'t': 'memory', 'star': 1}, FIN('Все пары найдены!')]}]}
 PL = {'sections': [S6, SM, S7, S8, S9, SG]}
+import os
+if len(sys.argv) == 1:   # мир намаза (пока только RU)
+    import nw; PL['sections'].append(nw.NW)
 if CT:
     PL = ct2.walk(PL)
     json.dump(PL, open('/home/claude/book/online/' + ('pl_tr.json' if 'tr' in sys.argv else 'pl_ct.json'), 'w'), ensure_ascii=False)

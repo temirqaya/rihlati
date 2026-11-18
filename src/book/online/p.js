@@ -26,10 +26,11 @@ function buildP(si, li){
   MODE = 'P'; KEY = 'p'+si+'-'+li; N = SC.length;
   STEPS = SC.map((s,k) => s.star ? k : -1).filter(k => k >= 0);
   AGAIN = () => { buildP(si, li); go(0); };
-  NEXTH = li < PS.lessons.length-1 ? `p${si}-${li+2}` : (si < PL.sections.length-1 ? `p${si+1}-1` : 'about');
+  const sameW = j => PL.sections[j] && (PL.sections[j].world || '') === (PS.world || '');
+  NEXTH = li < PS.lessons.length-1 ? `p${si}-${li+2}` : (sameW(si+1) ? `p${si+1}-1` : (PS.world ? 'namaz' : 'about'));
   const [s1, s2] = speaker(li);
   const hero = (who, kind) => CH[who + '_' + kind];
-  const nextT = li < PS.lessons.length-1 ? PS.lessons[li+1].title : (si < PL.sections.length-1 ? PL.sections[si+1].lessons[0].title : '');
+  const nextT = li < PS.lessons.length-1 ? PS.lessons[li+1].title : (sameW(si+1) ? PL.sections[si+1].lessons[0].title : '');
   $('#tAr').innerHTML = dirAr(PLs.icon) ? g(PLs.icon) : PLs.icon;
   $('#tRu').textContent = `${PS.title.replace(/^Раздел \d+\. /,'')} · ${PLs.title}`;
   $('#screens').innerHTML = SC.map((s,k) => `<section data-s="${k}">${renderP(s, k, s1, s2, hero, nextT)}</section>`).join('');
@@ -37,7 +38,7 @@ function buildP(si, li){
   drawStars($('#stars'));
   $$('[data-go]').forEach(b => b.onclick = () => go(+b.dataset.go));
   const ag = $('#again'); if(ag) ag.onclick = () => AGAIN();
-  const tm = $('#toMap2'); if(tm) tm.onclick = () => { location.hash = 'map'; };
+  const tm = $('#toMap2'); if(tm) tm.onclick = () => { location.hash = PS.world ? 'namaz' : 'map'; };
   const nl = $('#nextLetter'); if(nl) nl.onclick = () => { location.hash = NEXTH; };
 }
 
@@ -127,6 +128,15 @@ function enterP(i){
     $(`#msNext${k}`).onclick = () => { if(n < tot-1){ n++; draw(); } else { if(s.star) award(i); go(i+1); } };
     draw();
   }
+  $$(`section[data-s="${k}"] .nw-play[data-seq]`).forEach(e => e.onclick = () => {
+    const S = window.SONGS || {}, list = e.dataset.seq.split(',').map(x => S[x]).filter(Boolean);
+    if(e.classList.contains('on')){ try { VA && VA.pause(); } catch(er){} e.classList.remove('on'); return; }
+    $$('.nw-play.on').forEach(x => x.classList.remove('on'));
+    let j = 0; e.classList.add('on');
+    const next = () => { if(j >= list.length || !e.classList.contains('on')){ e.classList.remove('on'); return; }
+      try { if(VA) VA.pause(); VA = new Audio(list[j++]); VA.onended = next; if(!MUTE) VA.play().catch(()=>e.classList.remove('on')); else e.classList.remove('on'); } catch(er){ e.classList.remove('on'); } };
+    next();
+  });
   $$(`section[data-s="${k}"] .ist[data-song]`).forEach(e => e.onclick = () => { const src = (window.SONGS||{})[e.dataset.song]; if(!src) return; try { if(VA) VA.pause(); VA = new Audio(src); if(!MUTE) VA.play().catch(()=>{}); } catch(er){} });
   if(s.t === 'greet'){ const sb = $(`section[data-s="${k}"] .song`); if(sb) sb.onclick = () => { const src = (window.SONGS||{})[sb.dataset.song];
       try { if(VA && !VA.paused && VA.dataset && VA.dataset.song){ VA.pause(); sb.classList.remove('on'); return; } if(VA) VA.pause(); VA = new Audio(src); VA.dataset = {song: 1}; if(!MUTE){ VA.play().catch(()=>{}); sb.classList.add('on'); VA.onended = () => sb.classList.remove('on'); } } catch(e){} }; }
