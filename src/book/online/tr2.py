@@ -376,7 +376,7 @@ GT_JS = r'''Object.assign(GT, {
   about: {btn: '💗 Bu uygulama hakkında', back: '← Harita', title: 'Bu uygulama ne için', toMap: 'Haritaya', author: 'Elmaza Temirkaliyeva',
     text: ["Bu uygulama, çocuklar Kur'an‑ı Kerim'i okumaya ilk adımlarını Zeynep ve Yusuf ile birlikte sevinçle ve sevgiyle atsınlar diye hazırlandı.",
            'Okunan her harf çocuğa nur, bu uygulama da onunla öğreten ve öğrenen herkes için sadaka-i cariye olsun.'],
-    dedT: 'İthaf', dedN: "her şeyden önce<br>oğlum&nbsp;Yusuf'a&nbsp;—<br>ilham kaynağıma", dedD: "Allah seni Kur'an'ın dostu&nbsp;eylesin<br>ve kalbini onun nuruyla&nbsp;doldursun",
+    dedT: '', dedN: "Oğlum&nbsp;Yusuf'a —<br>her şey seninle başladı.<br>Buradaki her harf seni düşünerek&nbsp;yazıldı.", thx: "Destek olan ve yardım eden herkese teşekkür ederim — iyiliğiniz her sayfada yaşıyor. Ve Kur'an hocalarıma — bana açtığınız ilk harf ve şimdi başkalarına ulaştırdığım nur&nbsp;için.", dedD: "Allah bu emeği kabul etsin<br>ve hepimiz için sadaka-i&nbsp;câriye&nbsp;eylesin",
     dua: "«Allah'ım, bizden kabul et ve bunu faydalı bir ilim eyle»", credit: "Sure okumaları: «Bolalar uchun Qur'on» (YouTube). Emeği geçenlere teşekkür ederiz!"},
   ay: {prev: '← Geri', basm: 'Besmele', first: 'İlk ayet', next: 'Sonraki ayet', done: 'Okuduk!', whole: '🔊 Surenin tamamını dinle', num: (n, t) => `Ayet ${n} / ${t}`},
   g: {go: 'Başla!', again: 'Bir daha', swipe: 'Yılancığı parmağınla ya da oklarla yönlendir',
