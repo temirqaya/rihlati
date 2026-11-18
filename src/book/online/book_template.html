@@ -622,6 +622,7 @@ body.nw{background:linear-gradient(180deg,#D6ECE6 0%,#F3EEE2 62%)}
 .nw-st{display:flex;gap:10px;align-items:center;background:#FFFDF8;border:2px solid var(--line);border-radius:14px;padding:5px 10px}
 .nw-st-i svg{width:46px;height:46px;display:block}.nw-st-p svg{width:56px;height:auto;display:block}
 .nw-pair{display:flex;gap:3px}
+.nw-card-p{cursor:pointer}.nw-card-p.splash{animation:nwSplash .45s ease}@keyframes nwSplash{0%,100%{transform:scale(1)}40%{transform:scale(1.05)}}
 .nw-play{margin-top:6px;padding:6px 12px;font-size:13px;min-height:0}.nw-play.on{background:#2F7F73 !important;color:#fff !important;opacity:1 !important}.nw-pair svg.pz{width:62px;height:62px}
 .nw-st-b{flex:1}.nw-st-b>span{display:inline-flex;width:22px;height:22px;border-radius:50%;background:#2F7F73;color:#fff;font-size:12px;align-items:center;justify-content:center;margin-right:6px}
 .nw-st-b b{font-size:15px}.nw-st-b p{margin:2px 0 0;font-size:13px;color:var(--ink);font-weight:600;line-height:1.35}
@@ -746,9 +747,14 @@ const SND = {
   magic:  () => { [880,1109,1319,1760,2217].forEach((f,i)=>tone(f,i*.05,.3,'triangle',.07)); },
   page:   () => { tone(520,0,.08,'sine',.05,640); },
   tap:    () => { tone(660,0,.06,'sine',.06); },
+  water:  () => { [0,.05,.11,.18,.24,.31].forEach(d => { const f = 380 + Math.random()*420; tone(f, d, .08, 'sine', .07, f*2.1); }); },
+  bell:   () => { tone(1319,0,1.1,'sine',.06); tone(1976,0,.8,'sine',.025); tone(2637,.01,.5,'sine',.015); },
   fanfare:() => { [[523,0],[659,.12],[784,.24],[1047,.4]].forEach(([f,t])=>{ tone(f,t,.45,'triangle',.1); tone(f*2,t,.3,'sine',.04); }); }
 };
 function sfx(n){ if(MUTE || !SND[n]) return; try { SND[n](); } catch(e){} }
+// мир намаза: щелчок у закладок, плеск воды у картинок абдеста
+document.addEventListener('toggle', e => { const d = e.target; if(d && d.classList && d.classList.contains('nw-tab') && d.open) sfx('pop'); }, true);
+document.addEventListener('click', e => { const c = e.target.closest && e.target.closest('.nw-card-p'); if(!c) return; sfx('water'); c.classList.remove('splash'); void c.offsetWidth; c.classList.add('splash'); });
 // голос учителя (записи автора)
 let VA = null;
 function say(txt){ const V = window.VOICE || {}, src = V[(txt||'').trim()]; if(!src) return false;
@@ -1009,7 +1015,7 @@ function award(step){
 }
 function go(i){
   i = Math.max(0, Math.min(N-1, i));
-  if(i !== cur) sfx('page'); leave(cur); cur = i;
+  if(i !== cur) sfx(document.body.classList.contains('nw') ? 'bell' : 'page'); leave(cur); cur = i;
   $$('#screens section').forEach(s => s.classList.toggle('show', +s.dataset.s === i));
   $$('#path b').forEach((b,k) => { b.className = k<i ? 'done' : (k===i ? 'now' : ''); });
   $('#prev').disabled = i===0;

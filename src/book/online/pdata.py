@@ -346,12 +346,17 @@ SG = {'id': '11', 'title': 'Раздел 11. Игры', 'color': '#E0A53B', 'les
   {'title': 'Найди пару', 'icon': '🃏', 'screens': [{'t': 'memory', 'star': 1}, FIN('Все пары найдены!')]}]}
 PL = {'sections': [S6, SM, S7, S8, S9, SG]}
 import os
-if len(sys.argv) == 1:   # мир намаза (пока только RU)
-    import nw; PL['sections'].append(nw.NW)
+import nw
 if CT:
     PL = ct2.walk(PL)
+    import nw_i18n
+    _lang = 'tr' if 'tr' in sys.argv else 'ct'
+    _miss = set()
+    PL['sections'].append(nw_i18n.apply(nw.NW, nw_i18n.load(_lang), _miss))   # мир намаза: перевод по словарю nw_<lang>.json
+    if _miss: print('NW: нет перевода (%s): %d' % (_lang, len(_miss)), sorted(_miss)[:5])
     json.dump(PL, open('/home/claude/book/online/' + ('pl_tr.json' if 'tr' in sys.argv else 'pl_ct.json'), 'w'), ensure_ascii=False)
     print('ct ok'); sys.exit()
+PL['sections'].append(nw.NW)
 json.dump(PL, open('/home/claude/book/online/pl.json', 'w'), ensure_ascii=False)
 # строки для измерения сдвига глифов в карточках
 items = set()
