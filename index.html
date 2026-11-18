@@ -744,7 +744,7 @@ function ambFor(){ const onLesson = !$('#lesson').hidden; ambient(!onLesson || c
 const MUSBASE = /\/(qt|tr)\//.test(location.pathname) ? '../' : '';
 let GMUS = null;
 function gameMusic(){ const inGames = !$('#lesson').hidden && /^#p/.test(location.hash) && typeof PS !== 'undefined' && PS && PS.id === '11';
-  try { if(inGames && !MUTE){ if(!GMUS){ GMUS = new Audio(MUSBASE + 'audio/games.mp3'); GMUS.loop = true; GMUS.volume = 0.12; } if(GMUS.paused) GMUS.play().catch(()=>{}); }
+  try { if(inGames && !MUTE){ if(!GMUS){ GMUS = new Audio(MUSBASE + 'audio/games.mp3'); GMUS.loop = true; GMUS.volume = 0.2; } if(GMUS.paused) GMUS.play().catch(()=>{}); }
     else if(GMUS && !GMUS.paused) GMUS.pause(); } catch(e){} }
 document.addEventListener('pointerdown', () => gameMusic());
 document.addEventListener('pointerdown', () => { if(ac()) ambFor(); }, {once:true});
