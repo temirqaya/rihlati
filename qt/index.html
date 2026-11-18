@@ -140,6 +140,9 @@ h2{margin:0;font-weight:900;font-size:clamp(22px,3.4vw,38px);text-wrap:balance}
 .tile{font-family:var(--f-ar);font-size:clamp(40px,8vh,84px);line-height:1.4;background:var(--paper);border:3px solid var(--line);border-radius:22px;cursor:pointer;color:var(--indigo);transition:.2s}
 .tile.ok{background:var(--sage-l);border-color:var(--sage);transform:scale(.94)}
 .hasv{position:relative}
+.mlt.mseq i{font-style:normal;display:inline-block;transition:opacity .25s,transform .25s,color .25s}
+.mlt.mseq i.h{opacity:0;transform:scale(.3)}
+.mlt.mseq i.sing{color:#D9534F;transform:scale(1.3)}
 .btn.ayw{display:block;margin:0 auto 8px;padding:7px 16px;font-size:15px}
 .sayv::before{content:'🔊 ';font-family:system-ui}
 .hasv::after{content:'🔊';position:absolute;top:3px;right:5px;font-size:13px;line-height:1;font-family:system-ui;opacity:.75}
@@ -1649,6 +1652,13 @@ const ZPOS = {throat: [[199,314,'ء'],[199,294,'ه'],[226,252,'ع'],[226,232,'ح
   tongue: [[158,198,'ق ك ج ش ي ض'],[160,217,'ل ن ر ت د ط'],[176,236,'ص س ز ث ذ ظ']],
   lips: [[36,158,'ف'],[36,177,'ب'],[36,196,'م'],[36,215,'و']], nose: [[150,131,'نّ مّ']], mouth: [[150,173,'ا و ي']]};
 let PS = null, PLs = null, PSI = '', PLI = 0, PST = {};
+// звук буквы для раздела «Откуда выходят звуки»: своя запись (MKH_V) или слог с фатхой из алфавита
+const mkhSrc = ch => { const M = window.MKH_V || {}, V = window.VOICE || {}; if(M[ch]) return M[ch];
+  if(ch === 'ء') return V['أَ']; if(ch.length > 1 && ch[1] === 'ّ') return V['أَ' + ch[0] + 'َّ'];
+  if(ch.length > 1) return null; return V[ch + 'َ']; };
+let MKQ = 0;
+const mkhPlay = (src, done) => { try { if(VA) VA.pause(); VA = new Audio(src); let f = false; const fin = () => { if(!f){ f = true; done && done(); } };
+  VA.onended = () => setTimeout(fin, 180); VA.onerror = fin; if(MUTE) setTimeout(fin, 500); else VA.play().catch(() => setTimeout(fin, 500)); setTimeout(fin, 2500); } catch(e){ done && done(); } };
 const dirAr = t => /[؀-ۿ]/.test(t);
 
 function buildP(si, li){
@@ -1751,7 +1761,8 @@ function enterP(i){
         lay.insertAdjacentHTML('beforeend', `<span class="mlt cur" data-n="${n}" style="${mpos(lx, ly)}">${it.ch}</span>`); }
       else lay.querySelector(`[data-n="${n}"]`).classList.add('cur');
       const c = $(`#msC${k}`); c.classList.remove('in'); void c.offsetWidth;
-      c.innerHTML = `<div class="ms-l">${g(it.ch)}</div><div class="ms-n">${it.n}</div><small>${it.d}</small>`; c.classList.add('in'); sfx('pop');
+      c.innerHTML = `<div class="ms-l">${g(it.ch)}</div><div class="ms-n">${it.n}</div><small>${it.d}</small>`; c.classList.add('in');
+      const src = mkhSrc(it.ch); ++MKQ; if(src) mkhPlay(src); else sfx('pop'); c.onclick = () => { const s2 = mkhSrc(it.ch); if(s2) mkhPlay(s2); };
       $(`#msN${k}`).textContent = `${n+1} / ${tot}`;
       $(`#msNext${k}`).textContent = n < tot-1 ? 'Сонъраки ариф →' : 'Готово!'; };
     $(`#msNext${k}`).onclick = () => { if(n < tot-1){ n++; draw(); } else { if(s.star) award(i); go(i+1); } };
@@ -1767,9 +1778,14 @@ function enterP(i){
       $$(`#mS${k} .mz`).forEach(x => x.classList.toggle('mzon', x === z)); seen.add(z.dataset.z);
       z.classList.add('seen'); const hd = $(`#mS${k} .mhand`); if(hd) hd.remove();
       const lay = $(`#mS${k} .mlay`), zz = z.dataset.z; lay.querySelectorAll('.mlt.cur').forEach(e => e.classList.remove('cur'));
-      const have = lay.querySelectorAll(`[data-z="${zz}"]`);
-      if(have.length) have.forEach(e => { e.classList.add('cur'); e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; });
-      else (ZPOS[zz]||[]).forEach(([x, y, t], j) => lay.insertAdjacentHTML('beforeend', `<span class="mlt cur" data-z="${zz}" style="${mpos(x, y)};animation-delay:${j*0.12}s">${t}</span>`));
+      const have = lay.querySelectorAll(`[data-z="${zz}"]`), fresh = !have.length;
+      if(!fresh) have.forEach(e => e.classList.add('cur'));
+      else (ZPOS[zz]||[]).forEach(([x, y, t], j) => lay.insertAdjacentHTML('beforeend', `<span class="mlt cur mseq" data-z="${zz}" dir="rtl" style="${mpos(x, y)}">${t.split(' ').map(c => `<i class="h">${c}</i>`).join(' ')}</span>`));
+      const seq = [...lay.querySelectorAll(`[data-z="${zz}"] i`)], tok = ++MKQ;
+      const step = j => { if(tok !== MKQ) return; seq.forEach(e => e.classList.remove('sing')); if(j >= seq.length) return;
+        const e = seq[j]; e.classList.remove('h'); e.classList.add('sing'); const src = mkhSrc(e.textContent);
+        if(src) mkhPlay(src, () => step(j+1)); else setTimeout(() => step(j+1), 450); };
+      step(0);
       $(`#mP${k}`).innerHTML = `<div class="mg big"><span class="mg-t">${Z.n}</span><small>${Z.d}</small></div>`;
       $(`#mN${k}`).innerHTML = `<b>${seen.size}</b> / ${tot}`; if(seen.size >= s.need) award(i); });
   }
