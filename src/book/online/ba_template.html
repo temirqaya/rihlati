@@ -1,0 +1,392 @@
+<title>Урок: буква Ба</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Nunito:wght@600;700;800;900&display=swap">
+<style>
+/* Layout: one lesson screen at a time, like a book page under a soft sky; journey path on top, big buttons below */
+:root{
+  --sky1:#E4EEF6; --sky2:#FBF5EA; --paper:#FFFDF8; --ink:#5C342E; --ink-soft:#8A6A5E;
+  --rose:#D9998A; --rose-l:#F6DED5; --sage:#8FAE8B; --sage-l:#E2EDDD; --indigo:#53669B; --indigo-l:#DFE4F2;
+  --gold:#C9A15B; --gold-l:#F5E7C8; --line:#E8D9C6;
+  --f-ar:"Amiri Quran","Amiri","Traditional Arabic",serif;
+  --f-ui:"Nunito","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{margin:0;background:linear-gradient(180deg,var(--sky1) 0%,var(--sky2) 62%);color:var(--ink);font-family:var(--f-ui);font-weight:700;overflow:hidden}
+.app{height:100%;display:flex;flex-direction:column;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px;box-sizing:border-box;position:relative}
+.clouds{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.cloud{position:absolute;background:#fff;border-radius:999px;opacity:.85;filter:blur(.5px)}
+.cloud::before,.cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.cloud::before{width:55%;height:160%;left:15%;bottom:20%}
+.cloud::after{width:40%;height:120%;right:12%;bottom:25%}
+.c1{width:150px;height:40px;top:9%;left:6%;animation:drift 38s linear infinite alternate}
+.c2{width:110px;height:30px;top:17%;right:9%;animation:drift 30s linear infinite alternate-reverse}
+.c3{width:90px;height:24px;top:44%;left:-20px;opacity:.6;animation:drift 44s linear infinite alternate}
+@keyframes drift{to{transform:translateX(60px)}}
+
+header{position:relative;z-index:2;display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between}
+.title{display:flex;align-items:baseline;gap:10px;font-weight:900;font-size:clamp(15px,2vw,20px)}
+.title .ar{font-family:var(--f-ar);font-size:1.5em;color:var(--indigo);font-weight:400}
+.path{display:flex;align-items:center;gap:0;flex:1;min-width:180px;max-width:520px}
+.path i{flex:1;height:4px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 11px)}
+.path b{width:16px;height:16px;border-radius:50%;background:var(--paper);border:3px solid var(--line);flex:none;transition:.3s}
+.path b.done{background:var(--sage);border-color:var(--sage)}
+.path b.now{background:var(--gold);border-color:var(--gold);transform:scale(1.35);box-shadow:0 0 0 5px var(--gold-l)}
+.stars{display:flex;gap:4px;align-items:center;font-size:15px}
+.stars svg{width:26px;height:26px}
+.stars .on path{fill:var(--gold);stroke:#A9823F}
+.stars .off path{fill:var(--paper);stroke:var(--line)}
+.stars .pop{animation:pop .6s}
+@keyframes pop{40%{transform:scale(1.7) rotate(15deg)}}
+
+main{position:relative;z-index:1;flex:1;min-height:0;display:flex}
+section{display:none;flex:1;min-height:0;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,2vh,20px);text-align:center;animation:fade .45s ease}
+section.show{display:flex}
+@keyframes fade{from{opacity:.2;transform:translateY(10px)}}
+h2{margin:0;font-weight:900;font-size:clamp(22px,3.6vw,40px);text-wrap:balance}
+.lead{margin:0;font-size:clamp(15px,2vw,21px);color:var(--ink-soft);max-width:34em;text-wrap:balance}
+
+.duo{display:flex;align-items:flex-end;justify-content:center;gap:clamp(8px,3vw,40px);flex-wrap:wrap}
+.hero{display:flex;flex-direction:column;align-items:center;gap:6px}
+.hero svg{height:clamp(130px,30vh,300px);width:auto}
+.hero.sm svg{height:clamp(90px,19vh,190px)}
+.bubble{background:var(--paper);border:3px solid var(--line);border-radius:22px;padding:10px 16px;font-size:clamp(14px,1.8vw,20px);max-width:15em;position:relative;box-shadow:0 4px 0 rgba(92,52,46,.06)}
+.bubble::after{content:"";position:absolute;bottom:-12px;left:50%;margin-left:-10px;border:10px solid transparent;border-top-color:var(--line);border-bottom:0}
+.side{display:flex;align-items:center;gap:clamp(8px,2vw,24px);flex-wrap:wrap;justify-content:center}
+.side .bubble::after{display:none}
+
+.btn{font:inherit;font-weight:900;font-size:clamp(16px,2vw,21px);border:0;border-radius:999px;padding:.7em 1.5em;cursor:pointer;background:var(--indigo);color:#fff;box-shadow:0 5px 0 #3E4E7C;transition:transform .1s}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #3E4E7C}
+.btn.soft{background:var(--paper);color:var(--ink);box-shadow:0 5px 0 var(--line);border:2px solid var(--line)}
+.btn.rose{background:var(--rose);box-shadow:0 5px 0 #B87A6C}
+.btn:focus-visible,.tile:focus-visible,.card:focus-visible{outline:4px solid var(--gold);outline-offset:4px}
+
+.big{font-family:var(--f-ar);font-size:clamp(140px,30vh,320px);line-height:1.3;color:var(--indigo);position:relative;display:inline-block;cursor:pointer;user-select:none;padding:0 .2em}
+.meet{display:flex;align-items:center;justify-content:center;gap:clamp(10px,4vw,60px);flex-wrap:wrap}
+.letterbox{background:var(--paper);border:3px solid var(--line);border-radius:36px;padding:0 clamp(10px,3vw,40px);box-shadow:0 10px 30px rgba(83,102,155,.12);position:relative;min-width:min(60vw,320px)}
+.swap{position:relative;display:inline-block}
+.swap span{transition:opacity .6s}
+.swap .b{position:absolute;left:.2em;top:0;opacity:0}
+.swap span{transform:translateY(-.34em)}
+.swap.dot .a{opacity:0}.swap.dot .b{opacity:1}
+.name{font-weight:900;font-size:clamp(26px,4vw,46px);color:var(--rose)}
+.mnemo{display:flex;align-items:center;gap:10px;font-size:clamp(16px,2.2vw,24px)}
+.mnemo svg{width:56px;height:56px}
+.bounce{animation:bounce .7s}
+@keyframes bounce{30%{transform:translateY(-22px) scale(1.06)}60%{transform:translateY(4px)}}
+
+.cards{display:flex;gap:clamp(10px,3vw,40px);flex-wrap:wrap;justify-content:center}
+.card{font-family:var(--f-ar);font-size:clamp(80px,16vh,170px);line-height:1.35;width:clamp(110px,18vw,210px);background:var(--paper);border:4px solid var(--line);border-radius:30px;cursor:pointer;color:var(--indigo);transition:transform .15s,border-color .2s}
+.card:hover{transform:translateY(-4px)}
+.card.ok{border-color:var(--sage);background:var(--sage-l)}
+.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+.hint{min-height:1.5em;font-size:clamp(15px,2vw,21px);color:var(--rose)}
+
+.grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(6px,1.4vw,16px);width:min(100%,820px)}
+.tile{font-family:var(--f-ar);font-size:clamp(40px,8vh,84px);line-height:1.4;background:var(--paper);border:3px solid var(--line);border-radius:22px;cursor:pointer;color:var(--indigo);transition:.2s}
+.tile.ok{background:var(--sage-l);border-color:var(--sage);transform:scale(.94)}
+.count{font-size:clamp(18px,2.4vw,26px);font-weight:900}
+.count b{color:var(--sage)}
+
+.tracewrap{position:relative;width:min(92vw,560px);height:clamp(220px,46vh,440px);background:var(--paper);border:3px dashed var(--line);border-radius:30px;touch-action:none}
+.tracewrap canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:28px;cursor:crosshair}
+.colors{display:flex;gap:10px}
+.colors button{width:36px;height:36px;border-radius:50%;border:3px solid var(--paper);box-shadow:0 0 0 2px var(--line);cursor:pointer}
+.colors button.sel{box-shadow:0 0 0 4px var(--gold)}
+.row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:center}
+
+.field{position:relative;width:min(100%,900px);height:clamp(240px,50vh,480px);background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(220,232,242,.5));border:3px solid var(--line);border-radius:30px;overflow:hidden}
+.ball{position:absolute;width:clamp(62px,10vh,92px);height:clamp(62px,10vh,92px);border-radius:50%;border:3px solid rgba(255,255,255,.9);font-family:var(--f-ar);font-size:clamp(34px,6vh,54px);line-height:1;display:flex;align-items:center;justify-content:center;box-sizing:border-box;color:var(--ink);cursor:pointer;box-shadow:inset -6px -8px 0 rgba(0,0,0,.06),0 4px 10px rgba(92,52,46,.1)}
+.ball.boom{animation:boom .35s forwards;pointer-events:none}
+@keyframes boom{to{transform:scale(1.8);opacity:0}}
+.ball.no{animation:shake .4s}
+.timer{font-size:clamp(18px,2.4vw,26px);font-weight:900;color:var(--indigo)}
+.overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(255,253,248,.82)}
+
+.flash{font-family:var(--f-ar);font-size:clamp(110px,26vh,300px);line-height:1.3;color:var(--indigo);background:var(--paper);border:4px solid var(--line);border-radius:40px;width:min(70vw,380px);}
+.answer{font-size:clamp(26px,4vw,44px);font-weight:900;color:var(--rose);min-height:1.3em}
+
+.final .stars svg{width:clamp(36px,6vh,60px);height:clamp(36px,6vh,60px)}
+.final{gap:clamp(4px,1.2vh,14px)}
+.final .lead{margin-top:-6px}
+.dua{font-family:var(--f-ar);font-size:clamp(22px,3vw,34px);color:var(--indigo);font-weight:400}
+
+footer{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:6px}
+.navbtn{font:inherit;font-weight:900;font-size:clamp(15px,1.8vw,19px);border:2px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:.55em 1.3em;cursor:pointer;box-shadow:0 4px 0 var(--line)}
+.navbtn.next{background:var(--sage);border-color:var(--sage);color:#fff;box-shadow:0 4px 0 #6F8E6B}
+.navbtn:disabled{opacity:.35;cursor:default}
+.navbtn:focus-visible{outline:4px solid var(--gold);outline-offset:3px}
+.tip{font-size:13px;color:var(--ink-soft);text-align:center;flex:1}
+.g{display:inline-block;transform:translateY(-.34em)}
+.swap .g{display:inline-block}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
+@media (max-width:560px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.tip{display:none}.hero svg{height:clamp(110px,22vh,200px)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app">
+  <div class="clouds"><div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div></div>
+  <header>
+    <div class="title"><span class="ar">رِحْلَتِي</span><span>Урок 2 · Буква Ба</span></div>
+    <div class="path" id="path"></div>
+    <div class="stars" id="stars" aria-label="Звёздочки"></div>
+  </header>
+
+  <main>
+    <!-- 0 -->
+    <section data-s="0">
+      <div class="duo">
+        <div class="hero"><div class="bubble">Ассаляму алейкум!</div>{{a_wave}}</div>
+        <div class="hero"><div class="bubble">Сегодня у нас новая буква. Угадаешь какая?</div>{{m_wave}}</div>
+      </div>
+      <button class="btn" data-go="1">Бисмиллях, начинаем!</button>
+    </section>
+
+    <!-- 1 meet -->
+    <section data-s="1">
+      <div class="meet">
+        <div class="letterbox"><span class="big swap" id="swap" tabindex="0" role="button" aria-label="Буква"><span class="a g">ٮ</span><span class="b g">ب</span></span></div>
+        <div style="display:flex;flex-direction:column;gap:14px;align-items:center;max-width:22em">
+          <p class="lead" id="meetText">Посмотри: это лодочка. Чего-то не хватает…</p>
+          <button class="btn rose" id="addDot">Добавить точку</button>
+          <div id="meetMore" hidden style="display:flex;flex-direction:column;gap:12px;align-items:center">
+            <div class="name">Это буква Ба!</div>
+            <div class="mnemo">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 18 C20 2 2 8 8 26 C12 36 26 34 32 30 C38 34 52 36 56 26 C62 8 44 2 32 18Z" fill="#F6DED5" stroke="#D9998A" stroke-width="2.5"/><path d="M32 30 C24 36 14 48 22 54 C28 58 31 46 32 38 C33 46 36 58 42 54 C50 48 40 36 32 30Z" fill="#E2EDDD" stroke="#8FAE8B" stroke-width="2.5"/><path d="M32 16 V48" stroke="#5C342E" stroke-width="3" stroke-linecap="round"/><path d="M32 16 q-4 -8 -9 -9 M32 16 q4 -8 9 -9" stroke="#5C342E" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+              <span><b>Ба</b> — как <b>ба</b>бочка</span>
+            </div>
+            <button class="btn" id="sayBa">Скажем вместе: «Ба!»</button>
+          </div>
+        </div>
+      </div>
+      <div class="side"><div class="hero sm">{{a_point}}</div><div class="bubble" id="meetBubble">Нажми на кнопку, и лодочка станет буквой.</div></div>
+    </section>
+
+    <!-- 2 which -->
+    <section data-s="2">
+      <div class="side"><div class="hero sm">{{m_point}}</div><div class="bubble">Где Ба? У неё <b>одна точка снизу</b>.</div></div>
+      <div class="cards" id="which">
+        <button class="card" data-v="t"><span class="g">ت</span></button><button class="card" data-v="b"><span class="g">ب</span></button><button class="card" data-v="th"><span class="g">ث</span></button>
+      </div>
+      <div class="hint" id="whichHint"></div>
+    </section>
+
+    <!-- 3 find -->
+    <section data-s="3">
+      <h2>Найди все буквы Ба</h2>
+      <div class="count">Нашли: <b id="fcount">0</b> из 4</div>
+      <div class="grid" id="grid"></div>
+      <div class="hint" id="findHint"></div>
+    </section>
+
+    <!-- 4 trace -->
+    <section data-s="4">
+      <div class="side"><div class="hero sm">{{a_book}}</div><div class="bubble">Обведи букву пальчиком. Сначала лодочку, потом точку!</div></div>
+      <div class="tracewrap" id="tracewrap"><canvas id="cv"></canvas></div>
+      <div class="row">
+        <div class="colors" id="colors"></div>
+        <button class="btn soft" id="clear">Стереть</button>
+        <button class="btn" id="traceDone">Готово!</button>
+      </div>
+    </section>
+
+    <!-- 5 catch -->
+    <section data-s="5">
+      <div class="row"><h2>Поймай Ба!</h2><span class="timer" id="timer"></span><span class="count">Поймали: <b id="ccount">0</b></span></div>
+      <div class="field" id="field">
+        <div class="overlay" id="catchStart">
+          <p class="lead">Шарики летят вверх. Лопай только шарики с буквой <span style="font-family:var(--f-ar);font-size:1.6em;color:var(--indigo)">ب</span></p>
+          <button class="btn rose" id="catchGo">Старт!</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 flash -->
+    <section data-s="6">
+      <h2>Быстрый взгляд</h2>
+      <p class="lead">Какая это буква? Скажите вслух, а потом проверим.</p>
+      <div class="flash"><span class="g" id="flash">ب</span></div>
+      <div class="answer" id="answer"></div>
+      <div class="row"><button class="btn soft" id="reveal">Проверить</button><button class="btn" id="flashNext">Следующая</button></div>
+      <div class="count" id="fround"></div>
+    </section>
+
+    <!-- 7 final -->
+    <section data-s="7" class="final">
+      <h2>Машаллах! Ты молодец!</h2>
+      <div class="stars" id="finalStars"></div>
+      <div class="duo">
+        <div class="hero sm"><div class="bubble">Теперь ты знаешь букву Ба!</div>{{a_open}}</div>
+        <div class="hero sm"><div class="bubble">До встречи на следующем уроке, ин шаа Аллах!</div>{{m_wink}}</div>
+      </div>
+      <div class="dua">رَبِّ زِدْنِي عِلْمًا</div>
+      <p class="lead" >«Господи, прибавь мне знаний»</p>
+      <button class="btn soft" id="again">Пройти урок ещё раз</button>
+    </section>
+  </main>
+
+  <footer>
+    <button class="navbtn" id="prev">← Назад</button>
+    <span class="tip">Покажите эту страницу через демонстрацию экрана. Листать можно стрелками на клавиатуре.</span>
+    <button class="navbtn next" id="next">Дальше →</button>
+  </footer>
+</div>
+<canvas id="fx"></canvas>
+
+<script>
+(function(){
+const N = 8, STAR_STEPS = [2,3,4,5,6];
+let cur = 0, got = new Set();
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const STAR = '<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+
+// path + stars
+$('#path').innerHTML = Array.from({length:N},(_, i)=> (i? '<i></i>':'') + '<b></b>').join('');
+function drawStars(el){ el.innerHTML = STAR_STEPS.map(s=>`<span class="${got.has(s)?'on':'off'}" data-st="${s}">${STAR}</span>`).join(''); }
+drawStars($('#stars'));
+function award(step){
+  if(got.has(step)) return;
+  got.add(step); drawStars($('#stars'));
+  const el = $(`#stars [data-st="${step}"]`); el && el.classList.add('pop');
+  confetti();
+}
+
+function go(i){
+  i = Math.max(0, Math.min(N-1, i));
+  leave(cur); cur = i;
+  $$('section').forEach(s => s.classList.toggle('show', +s.dataset.s === i));
+  $$('#path b').forEach((b, k) => { b.className = k < i ? 'done' : (k === i ? 'now' : ''); });
+  $('#prev').disabled = i === 0; $('#next').disabled = i === N-1;
+  enter(i);
+}
+$('#prev').onclick = () => go(cur-1);
+$('#next').onclick = () => go(cur+1);
+$$('[data-go]').forEach(b => b.onclick = () => go(+b.dataset.go));
+document.addEventListener('keydown', e => { if(e.target.closest('input,textarea')) return; if(e.key==='ArrowRight') go(cur+1); if(e.key==='ArrowLeft') go(cur-1); });
+
+// 1 meet
+function resetMeet(){ $('#swap').classList.remove('dot'); $('#addDot').hidden=false; $('#meetMore').hidden=true; $('#meetText').textContent='Посмотри: это лодочка. Чего-то не хватает…'; $('#meetBubble').textContent='Нажми на кнопку, и лодочка станет буквой.'; }
+$('#addDot').onclick = () => { $('#swap').classList.add('dot'); $('#addDot').hidden=true; $('#meetMore').hidden=false; $('#meetMore').style.display='flex'; $('#meetText').textContent='Одна точка снизу, и получилась буква!'; $('#meetBubble').textContent='Нажми на букву, она подпрыгнет!'; };
+function hop(){ const s=$('#swap'); s.classList.remove('bounce'); void s.offsetWidth; s.classList.add('bounce'); }
+$('#swap').onclick = hop; $('#swap').onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); hop(); } };
+$('#sayBa').onclick = () => { hop(); $('#meetBubble').textContent='Ба! Машаллах, как громко и красиво!'; confetti(40); };
+
+// 2 which
+$$('#which .card').forEach(c => c.onclick = () => {
+  if(c.dataset.v === 'b'){ c.classList.add('ok'); $('#whichHint').style.color='var(--sage)'; $('#whichHint').textContent='Правильно! Одна точка снизу — это Ба.'; award(2); }
+  else { c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake');
+    $('#whichHint').style.color='var(--rose)';
+    $('#whichHint').textContent = c.dataset.v==='t' ? 'Тут две точки, и они сверху. Попробуй ещё!' : 'Тут три точки сверху. Попробуй ещё!'; }
+});
+function resetWhich(){ $$('#which .card').forEach(c=>c.classList.remove('ok')); $('#whichHint').textContent=''; }
+
+// 3 find
+function buildGrid(){
+  const items = ['ب','ب','ب','ب','ا','ت','ث','ا','ت','ث','ن','ا'];
+  for(let i=items.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [items[i],items[j]]=[items[j],items[i]]; }
+  let n=0; $('#fcount').textContent='0'; $('#findHint').textContent='';
+  $('#grid').innerHTML = items.map(l=>`<button class="tile" data-l="${l}"><span class="g">${l}</span></button>`).join('');
+  $$('#grid .tile').forEach(t => t.onclick = () => {
+    if(t.classList.contains('ok')) return;
+    if(t.dataset.l==='ب'){ t.classList.add('ok'); n++; $('#fcount').textContent=n; if(n===4){ $('#findHint').style.color='var(--sage)'; $('#findHint').textContent='Все четыре нашлись! Машаллах!'; award(3); } }
+    else { t.classList.remove('shake'); void t.offsetWidth; t.classList.add('shake'); $('#findHint').style.color='var(--rose)'; $('#findHint').textContent='Это другая буква. Ищи одну точку снизу.'; }
+  });
+}
+
+// 4 trace
+const cv = $('#cv'), ctx = cv.getContext('2d'); let pen = '#D9998A', drawing=false, last=null, strokes=0;
+const COLS = ['#D9998A','#53669B','#8FAE8B','#C9A15B'];
+$('#colors').innerHTML = COLS.map((c,i)=>`<button style="background:${c}" data-c="${c}" class="${i?'':'sel'}" aria-label="Цвет"></button>`).join('');
+$$('#colors button').forEach(b => b.onclick = () => { pen=b.dataset.c; $$('#colors button').forEach(x=>x.classList.toggle('sel',x===b)); });
+function sizeCanvas(){
+  const r = $('#tracewrap').getBoundingClientRect(), d = window.devicePixelRatio||1;
+  if(!r.width) return;
+  cv.width = r.width*d; cv.height = r.height*d; ctx.setTransform(d,0,0,d,0,0);
+  ctx.clearRect(0,0,r.width,r.height);
+  const fs = r.height*0.72;
+  ctx.font = `${fs}px "Amiri Quran", "Amiri", serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle = 'rgba(83,102,155,.13)'; ctx.fillText('ب', r.width/2, r.height*0.42);
+  ctx.setLineDash([6,8]); ctx.lineWidth=2; ctx.strokeStyle='rgba(83,102,155,.45)'; ctx.strokeText('ب', r.width/2, r.height*0.42); ctx.setLineDash([]);
+  strokes=0;
+}
+function pt(e){ const r=cv.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; }
+cv.addEventListener('pointerdown', e => { drawing=true; last=pt(e); cv.setPointerCapture(e.pointerId); dot(last); });
+cv.addEventListener('pointermove', e => { if(!drawing) return; const p=pt(e); ctx.strokeStyle=pen; ctx.lineWidth=Math.max(14, cv.clientHeight*0.05); ctx.lineCap='round'; ctx.lineJoin='round'; ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; });
+['pointerup','pointercancel','pointerleave'].forEach(ev => cv.addEventListener(ev, () => { if(drawing) strokes++; drawing=false; }));
+function dot(p){ ctx.fillStyle=pen; ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(7,cv.clientHeight*0.025),0,7); ctx.fill(); }
+$('#clear').onclick = sizeCanvas;
+$('#traceDone').onclick = () => { if(strokes>0) award(4); else { $('#tracewrap').classList.remove('shake'); void $('#tracewrap').offsetWidth; $('#tracewrap').classList.add('shake'); } };
+window.addEventListener('resize', () => { if(cur===4) sizeCanvas(); });
+
+// 5 catch
+let raf=null, spawnT=null, tickT=null, balls=[], caught=0, left=0;
+const BCOL = ['#F6DED5','#E2EDDD','#DFE4F2','#F5E7C8'];
+function resetCatch(){ stopCatch(); $$('#field .ball').forEach(b=>b.remove()); caught=0; $('#ccount').textContent='0'; $('#timer').textContent=''; $('#catchStart').hidden=false; $('#catchStart').querySelector('.lead').innerHTML='Шарики летят вверх. Лопай только шарики с буквой <span style="font-family:var(--f-ar);font-size:1.6em;color:var(--indigo)">ب</span>'; $('#catchGo').textContent='Старт!'; }
+function stopCatch(){ cancelAnimationFrame(raf); clearInterval(spawnT); clearInterval(tickT); raf=null; }
+function spawn(){
+  const f=$('#field'), W=f.clientWidth, H=f.clientHeight;
+  const isB = Math.random()<0.5, l = isB ? 'ب' : ['ا','ت','ث'][Math.floor(Math.random()*3)];
+  const b=document.createElement('button'); b.className='ball'; b.innerHTML='<span class="g">'+l+'</span>'; b.setAttribute('aria-label', isB?'Ба':'другая буква');
+  b.style.background = BCOL[Math.floor(Math.random()*4)];
+  f.appendChild(b); const s=b.offsetWidth;
+  const o={el:b, x:Math.random()*(W-s), y:H+4, v:(H/7.5)*(0.8+Math.random()*0.5), ph:Math.random()*6, isB};
+  b.onpointerdown = e => { e.preventDefault();
+    if(o.isB){ caught++; $('#ccount').textContent=caught; b.classList.add('boom'); o.dead=true; setTimeout(()=>b.remove(),360); miniBurst(e.clientX,e.clientY); }
+    else { b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); } };
+  balls.push(o);
+}
+let lastT=0;
+function frame(t){ const dt = lastT ? Math.min(.05,(t-lastT)/1000) : 0; lastT=t;
+  balls = balls.filter(o => { if(o.dead) return false; o.y -= o.v*dt; o.ph += dt*2; o.el.style.transform=`translate(${o.x + Math.sin(o.ph)*10}px, ${o.y}px)`; if(o.y < -o.el.offsetHeight-10){ o.el.remove(); return false; } return true; });
+  raf = requestAnimationFrame(frame); }
+$('#catchGo').onclick = () => {
+  $$('#field .ball').forEach(b=>b.remove()); balls=[]; caught=0; $('#ccount').textContent='0';
+  $('#catchStart').hidden=true; left=25; $('#timer').textContent=left+' сек'; lastT=0;
+  spawn(); spawnT=setInterval(spawn, 800); raf=requestAnimationFrame(frame);
+  tickT=setInterval(()=>{ left--; $('#timer').textContent=left+' сек'; if(left<=0){ stopCatch(); $$('#field .ball').forEach(b=>b.remove()); balls=[];
+    $('#catchStart').hidden=false; $('#catchStart').querySelector('.lead').innerHTML = `Ура! Поймали <b style="color:var(--sage)">${caught}</b> букв Ба!`; $('#catchGo').textContent='Ещё раз'; if(caught>0) award(5); } },1000);
+};
+
+// 6 flash
+let fr=0, seq=[];
+function resetFlash(){ seq=['ب','ا','ب','ب','ا','ب']; for(let i=seq.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[seq[i],seq[j]]=[seq[j],seq[i]];} fr=0; showFlash(); }
+function showFlash(){ $('#flash').textContent=seq[fr]; $('#answer').textContent=''; $('#fround').textContent=`${fr+1} из ${seq.length}`; $('#flashNext').textContent = fr===seq.length-1 ? 'Закончить' : 'Следующая'; const f=$('#flash').parentNode; f.classList.remove('bounce'); void f.offsetWidth; f.classList.add('bounce'); }
+$('#reveal').onclick = () => { $('#answer').textContent = seq[fr]==='ب' ? 'Это Ба!' : 'Это Алиф!'; };
+$('#flashNext').onclick = () => { if(fr<seq.length-1){ fr++; showFlash(); } else { award(6); go(7); } };
+
+// 7 final
+$('#again').onclick = () => { got.clear(); drawStars($('#stars')); go(0); };
+
+function enter(i){
+  if(i===1) resetMeet();
+  if(i===2) resetWhich();
+  if(i===3) buildGrid();
+  if(i===4) (document.fonts ? document.fonts.load('100px "Amiri Quran"') : Promise.resolve()).then(()=>requestAnimationFrame(sizeCanvas), sizeCanvas);
+  if(i===5) resetCatch();
+  if(i===6) resetFlash();
+  if(i===7){ drawStars($('#finalStars')); confetti(120); }
+}
+function leave(i){ if(i===5) stopCatch(); }
+
+// confetti
+const fx=$('#fx'), fc=fx.getContext('2d'); let parts=[], fxRaf=null;
+const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function fit(){ const d=devicePixelRatio||1; fx.width=innerWidth*d; fx.height=innerHeight*d; fc.setTransform(d,0,0,d,0,0); }
+fit(); addEventListener('resize', fit);
+const PC=['#D9998A','#8FAE8B','#C9A15B','#53669B','#F6DED5'];
+function add(x,y,n,spread){ for(let k=0;k<n;k++){ const a=Math.random()*Math.PI*2, s=spread*(0.4+Math.random()); parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-spread*0.6,r:3+Math.random()*4,c:PC[k%PC.length],life:1,star:Math.random()<.3}); } run(); }
+function confetti(n){ if(reduce) return; add(innerWidth/2, innerHeight*0.35, n||70, 9); }
+function miniBurst(x,y){ if(reduce) return; add(x,y,16,5); }
+function run(){ if(fxRaf) return; const step=()=>{ fc.clearRect(0,0,innerWidth,innerHeight);
+  parts = parts.filter(p=>p.life>0); parts.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=0.25; p.vx*=0.99; p.life-=0.012; fc.globalAlpha=Math.max(0,p.life); fc.fillStyle=p.c;
+    if(p.star){ fc.beginPath(); for(let j=0;j<10;j++){ const rr=j%2?p.r*0.5:p.r*1.4, an=j*Math.PI/5; fc.lineTo(p.x+Math.cos(an)*rr,p.y+Math.sin(an)*rr);} fc.fill(); }
+    else { fc.beginPath(); fc.arc(p.x,p.y,p.r,0,7); fc.fill(); } });
+  fc.globalAlpha=1; if(parts.length) fxRaf=requestAnimationFrame(step); else { fxRaf=null; fc.clearRect(0,0,innerWidth,innerHeight); } };
+  fxRaf=requestAnimationFrame(step); }
+
+go(0);
+})();
+</script>

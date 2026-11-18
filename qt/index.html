@@ -444,7 +444,7 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;al
 .navbtn{font:inherit;font-weight:900;font-size:clamp(15px,1.8vw,19px);border:2px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:.55em 1.3em;cursor:pointer;box-shadow:0 4px 0 var(--line)}
 .navbtn.next{background:var(--sage);border-color:var(--sage);color:#fff;box-shadow:0 4px 0 #6F8E6B}
 .navbtn:disabled{opacity:.35;cursor:default}
-.tip{font-size:13px;color:var(--ink-soft);text-align:center;flex:1}
+.tip{font-size:13px;color:var(--ink-soft);text-align:center;flex:1;visibility:hidden}
 
 /* ---------- cover ---------- */
 #cover{position:relative;z-index:1;flex:1;min-height:0;display:flex;align-items:stretch;justify-content:center;padding-block:4px}
@@ -1667,9 +1667,10 @@ const ZPOS = {throat: [[199,314,'ء'],[199,294,'ه'],[226,252,'ع'],[226,232,'ح
   lips: [[36,158,'ف'],[36,177,'ب'],[36,196,'م'],[36,215,'و']], nose: [[150,131,'نّ مّ']], mouth: [[150,173,'ا و ي']]};
 let PS = null, PLs = null, PSI = '', PLI = 0, PST = {};
 // звук буквы для раздела «Откуда выходят звуки»: своя запись (MKH_V) или слог с фатхой из алфавита
-const mkhSrc = ch => { const M = window.MKH_V || {}, V = window.VOICE || {}; if(M[ch]) return M[ch];
+// по решению автора — звук как в алфавите: название буквы (VOICE_N), иначе слог с фатхой
+const mkhSrc = ch => { const M = window.MKH_V || {}, V = window.VOICE || {}, N = window.VOICE_N || {}; if(M[ch]) return M[ch];
   if(ch === 'ء') return V['أَ']; if(ch.length > 1 && ch[1] === 'ّ') return V['أَ' + ch[0] + 'َّ'];
-  if(ch.length > 1) return null; return V[ch + 'َ']; };
+  if(ch.length > 1) return null; return N[ch] || V[ch + 'َ']; };
 let MKQ = 0;
 const mkhPlay = (src, done) => { try { if(VA) VA.pause(); VA = new Audio(src); let f = false; const fin = () => { if(!f){ f = true; done && done(); } };
   VA.onended = () => setTimeout(fin, 180); VA.onerror = fin; if(MUTE) setTimeout(fin, 500); else VA.play().catch(() => setTimeout(fin, 500)); setTimeout(fin, 2500); } catch(e){ done && done(); } };
@@ -1757,7 +1758,7 @@ function enterP(i){
     const draw = () => { const part = s.items.slice(page*per, page*per+per);
       $(`#pr${k}`).innerHTML = part.map((t,j) => { const ru = s.ru ? s.ru[page*per+j] : '';
         return `<button class="tile ${s.cls==='q'?'qw':''}${(window.VOICE||{})[t]?' hasv':''}" data-t="${t}" data-i="${page*per+j}">${s.cls==='q' ? `<span class="arin q">${t}</span>` : g(t)}${ru?`<small class="pr-ru" hidden>${ru}</small>`:''}</button>`; }).join('');
-      $$(`#pr${k} .tile`).forEach(t => t.onclick = () => { bounceEl(t); const tv = s.ayv && (window.SONGS||{})['t1_' + s.ayv[+t.dataset.i]]; if(tv){ try { if(VA) VA.pause(); VA = new Audio(tv); if(!MUTE) VA.play().catch(()=>{}); } catch(e){} } else say(t.dataset.t); const r = t.querySelector('.pr-ru'); if(r) r.hidden = false; });
+      $$(`#pr${k} .tile`).forEach(t => t.onclick = () => { bounceEl(t); const tv = s.ayv && (window.SONGS||{})['t1_' + s.ayv[+t.dataset.i]]; const nm = !tv && PS && PS.id === '7' && t.dataset.t.length === 2 && mkhSrc(t.dataset.t[0] === 'أ' ? 'ء' : t.dataset.t[0]); if(tv || nm){ try { if(VA) VA.pause(); VA = new Audio(tv || nm); if(!MUTE) VA.play().catch(()=>{}); } catch(e){} } else say(t.dataset.t); const r = t.querySelector('.pr-ru'); if(r) r.hidden = false; });
       $(`#prN${k}`).textContent = pages > 1 ? `${page+1} / ${pages}` : '';
       $(`#prNext${k}`).textContent = page < pages-1 ? 'Ильери' : 'Окъудыкъ!'; };
     $(`#prNext${k}`).onclick = () => { if(page < pages-1){ page++; draw(); } else { if(s.star) award(i); go(i+1); } };
