@@ -125,7 +125,7 @@ function buildSet(id, i){
     </div>
     <div class="dua">رَبِّ زِدْنِي عِلْمًا</div>
     <p class="lead">«Господи, прибавь мне знаний»</p>
-    <div class="row"><button class="btn soft" id="again">Ещё раз</button>${i < C.lessons.length-1 ? `<button class="btn sage" id="nextLetter">Дальше: ${C.lessons[i+1].title} →</button>` : ''}<button class="btn soft" id="toMap2">На карту</button></div>
+    <div class="row"><button class="btn soft" id="again">Ещё раз</button><button class="btn soft" id="toMap2">На карту</button></div>
   </section>`;
   $('#path').innerHTML = Array.from({length:N},(_,k)=>(k?'<i></i>':'')+'<b></b>').join('');
   drawStars($('#stars'));

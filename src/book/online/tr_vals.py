@@ -33,7 +33,7 @@ V = [
  '>Kontrol et</button><button class="btn" id="flashNext">Sonraki</button>',
  '<h2>Maşallah! Aferin!</h2>\n    <div class="stars" id="finalStars"></div>\n    <div class="duo">\n      <div class="hero sm"><div class="bubble">Artık ${L.ru} harfini biliyorsun!</div>',
  "'Sonraki harf — '+LET[i+1].ru+'. Görüşmek üzere, inşallah!' : 'Bütün harfleri öğrendin! Allah emeğini kabul etsin!'",
- '<p class="lead">«Rabbim, ilmimi artır»</p>\n    <div class="row"><button class="btn soft" id="again">Bir daha</button>${i<LET.length-1?`<button class="btn sage" id="nextLetter">Sonraki harf: ${LET[i+1].ru} →</button>`:\'\'}<button class="btn soft" id="toMap2">Haritaya</button></div>',
+ '<p class="lead">«Rabbim, ilmimi artır»</p>\n    <div class="row"><button class="btn soft" id="again">Bir daha</button><button class="btn soft" id="toMap2">Haritaya</button></div>',
  'CLEAD = `Balonlar yukarı uçuyor. Sadece <span class="arin">${L.ch}</span> harfi olan balonları patlat`;',
  'Yaşasın! <b style="color:var(--sage)">${caught}</b> tane yakaladın! Maşallah!',
  "$('#catchGo').textContent = 'Bir daha';",

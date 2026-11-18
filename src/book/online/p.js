@@ -83,7 +83,7 @@ function renderP(s, k, s1, s2, hero, nextT){
     case 'final': return `<h2>Машаллах! Ты молодец!</h2><div class="stars" id="finalStars"></div>
       <div class="duo"><div class="hero sm"><div class="bubble">${s.a}</div>${hero(s1,'open')}</div><div class="hero sm"><div class="bubble">${s.m}</div>${hero(s2,'wink')}</div></div>
       <div class="dua">رَبِّ زِدْنِي عِلْمًا</div><p class="lead">«Господи, прибавь мне знаний»</p>
-      <div class="row"><button class="btn soft" id="again">Ещё раз</button>${nextT?`<button class="btn sage" id="nextLetter">Дальше: ${nextT} →</button>`:''}<button class="btn soft" id="toMap2">На карту</button></div>`;
+      <div class="row"><button class="btn soft" id="again">Ещё раз</button><button class="btn soft" id="toMap2">На карту</button></div>`;
   }
   return '';
 }

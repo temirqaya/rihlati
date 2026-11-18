@@ -98,7 +98,7 @@ function buildSk(i){
     </div>
     <div class="dua">رَبِّ زِدْنِي عِلْمًا</div>
     <p class="lead">«Господи, прибавь мне знаний»</p>
-    <div class="row"><button class="btn soft" id="again">Ещё раз</button>${i===0 ? '<button class="btn sage" id="nextLetter">Дальше: Шадда →</button>' : ''}<button class="btn soft" id="toMap2">На карту</button></div>
+    <div class="row"><button class="btn soft" id="again">Ещё раз</button><button class="btn soft" id="toMap2">На карту</button></div>
   </section>`;
   $('#path').innerHTML = Array.from({length:N},(_,k)=>(k?'<i></i>':'')+'<b></b>').join('');
   drawStars($('#stars'));

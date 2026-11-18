@@ -439,6 +439,8 @@ h2{margin:0;font-weight:900;font-size:clamp(22px,3.4vw,38px);text-wrap:balance}
 .answer{font-size:clamp(26px,4vw,42px);font-weight:900;color:var(--rose);min-height:1.3em}
 
 .final{gap:clamp(4px,1.2vh,14px)}
+.final .duo,section:has(.dua) .duo{flex-wrap:nowrap;align-items:flex-end;width:100%;max-width:560px}.final .duo .hero,section:has(.dua) .duo .hero{flex:1 1 0;min-width:0}
+@media (max-width:560px){.final .bubble,section:has(.dua) .duo .bubble{font-size:13px;padding:8px 10px;max-width:none}}
 .final .stars svg{width:clamp(36px,6vh,58px);height:clamp(36px,6vh,58px)}
 .dua{font-family:var(--f-ar);font-size:clamp(22px,3vw,34px);color:var(--indigo);font-weight:400;line-height:1.6}
 
@@ -590,7 +592,7 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;al
 /* ---------- мир намаза ---------- */
 #cover.paged{overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;justify-content:flex-start;gap:16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 #cover.paged::-webkit-scrollbar{display:none}
-#cover.paged,#cover.paged:focus,#namaz:focus{outline:none}
+#cover.paged,#cover.paged:focus,#namaz:focus,#map:focus,#table:focus,#about:focus,#lesson:focus,section:focus{outline:none}
 .lsw{transition:opacity .25s}
 #cover.paged .cv-card{flex:0 0 100%;max-width:none;box-sizing:border-box;scroll-snap-align:center;scroll-snap-stop:always}
 @media (min-width:700px){#cover.paged .cv-card{flex-basis:min(100%,620px)}#cover.paged{padding-inline:calc((100% - min(100%,620px))/2)}}
@@ -1028,7 +1030,7 @@ function buildLesson(i){
     </div>
     <div class="dua">رَبِّ زِدْنِي عِلْمًا</div>
     <p class="lead">«Rabbim, ilmimi artır»</p>
-    <div class="row"><button class="btn soft" id="again">Bir daha</button>${i<LET.length-1?`<button class="btn sage" id="nextLetter">Sonraki harf: ${LET[i+1].ru} →</button>`:''}<button class="btn soft" id="toMap2">Haritaya</button></div>
+    <div class="row"><button class="btn soft" id="again">Bir daha</button><button class="btn soft" id="toMap2">Haritaya</button></div>
   </section>`;
   $('#path').innerHTML = Array.from({length:N},(_,k)=>(k?'<i></i>':'')+'<b></b>').join('');
   drawStars($('#stars'));
@@ -1431,7 +1433,7 @@ function buildSet(id, i){
     </div>
     <div class="dua">رَبِّ زِدْنِي عِلْمًا</div>
     <p class="lead">«Rabbim, ilmimi artır»</p>
-    <div class="row"><button class="btn soft" id="again">Bir daha</button>${i < C.lessons.length-1 ? `<button class="btn sage" id="nextLetter">İleri: ${C.lessons[i+1].title} →</button>` : ''}<button class="btn soft" id="toMap2">Haritaya</button></div>
+    <div class="row"><button class="btn soft" id="again">Bir daha</button><button class="btn soft" id="toMap2">Haritaya</button></div>
   </section>`;
   $('#path').innerHTML = Array.from({length:N},(_,k)=>(k?'<i></i>':'')+'<b></b>').join('');
   drawStars($('#stars'));
@@ -1623,7 +1625,7 @@ function buildSk(i){
     </div>
     <div class="dua">رَبِّ زِدْنِي عِلْمًا</div>
     <p class="lead">«Rabbim, ilmimi artır»</p>
-    <div class="row"><button class="btn soft" id="again">Bir daha</button>${i===0 ? '<button class="btn sage" id="nextLetter">İleri: Şedde →</button>' : ''}<button class="btn soft" id="toMap2">Haritaya</button></div>
+    <div class="row"><button class="btn soft" id="again">Bir daha</button><button class="btn soft" id="toMap2">Haritaya</button></div>
   </section>`;
   $('#path').innerHTML = Array.from({length:N},(_,k)=>(k?'<i></i>':'')+'<b></b>').join('');
   drawStars($('#stars'));
@@ -1829,7 +1831,7 @@ function renderP(s, k, s1, s2, hero, nextT){
     case 'final': return `<h2>Maşallah! Aferin!</h2><div class="stars" id="finalStars"></div>
       <div class="duo"><div class="hero sm"><div class="bubble">${s.a}</div>${hero(s1,'open')}</div><div class="hero sm"><div class="bubble">${s.m}</div>${hero(s2,'wink')}</div></div>
       <div class="dua">رَبِّ زِدْنِي عِلْمًا</div><p class="lead">«Rabbim, ilmimi artır»</p>
-      <div class="row"><button class="btn soft" id="again">Bir daha</button>${nextT?`<button class="btn sage" id="nextLetter">İleri: ${nextT} →</button>`:''}<button class="btn soft" id="toMap2">Haritaya</button></div>`;
+      <div class="row"><button class="btn soft" id="again">Bir daha</button><button class="btn soft" id="toMap2">Haritaya</button></div>`;
   }
   return '';
 }

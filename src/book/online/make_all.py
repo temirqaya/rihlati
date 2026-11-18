@@ -52,6 +52,7 @@ if('serviceWorker' in navigator){{ addEventListener('load',()=>navigator.service
     _vn = 'voice_names.json' if ('/qt/' in out or '/tr/' in out) else 'voice_names_ru.json'
     a=a.replace('<head>','<head><script>window.VOICE_N='+urlmap('/home/claude/book/online/'+_vn, prefix, out)+';</script>',1)
     a=a[:-7]+LSW_JS+GC_JS+js
+    if '/qt/' in out: a=a.replace('<html lang="ru">','<html lang="crh">',1)
     if '/tr/' in out: a=a.replace('<html lang="ru">','<html lang="tr">',1).replace('content="Рихляти"','content="Rihleti"',1)
     open(out,'w').write(a)
 import os
