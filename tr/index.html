@@ -314,7 +314,7 @@ h2{margin:0;font-weight:900;font-size:clamp(22px,3.4vw,38px);text-wrap:balance}
 .tb-row{display:grid;grid-template-columns:1.25fr 1fr 1fr 1fr;gap:4px;direction:rtl;margin-bottom:4px}
 .tb-hd span{background:var(--indigo);color:#fff;font-weight:900;font-size:13px;border-radius:9px;padding:4px 0;direction:ltr}
 .tb-row .tb-c{height:46px;font-size:26px}
-.tb-c.on{background:#FFF3C4;border-color:var(--gold,#E9B949)}
+.tb-c.on,.tb-n.on{background:#FFF3C4;border-color:var(--gold,#E9B949)}
 .tb-n{position:relative;border:2px solid var(--line);border-radius:10px;background:#F4EEFA;cursor:pointer;font:inherit;height:46px;padding:0 6px 6px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:5px;direction:rtl}
 .tb-l{font-family:var(--f-ar);font-size:24px;line-height:1;color:var(--rose)}
 .tb-n small{font-weight:800;font-size:12px;color:var(--ink);padding-top:6px}
@@ -784,7 +784,8 @@ function drawTable(){
   const syl = (c, h) => c === 'ا' ? ({a:'أَ', i:'إِ', u:'أُ'})[h] : c + ({a:'َ', i:'ِ', u:'ُ'})[h];
   const tabs = `<div class="tb-tabs">${T.tabs.map((t, j) => `<button class="tb-tab${j === TBTAB ? ' on' : ''}" data-j="${j}">${t}</button>`).join('')}</div>`;
   let body = '';
-  const half = (list) => `<div class="tb-half"><div class="tb-row tb-hd"><span>${T.cols[0]}</span><span>${T.cols[2]}</span><span>${T.cols[3]}</span><span>${T.cols[4]}</span></div>${list.map(L => `<div class="tb-row"><button class="tb-n" data-n="${L.ch}"><span class="tb-l">${g(L.ch)}</span><small>${L.ru}</small></button>${['a','i','u'].map(h => { const s = syl(L.ch, h);
+  const VNh = window.VOICE_N || {};
+  const half = (list) => `<div class="tb-half"><div class="tb-row tb-hd"><span>${T.cols[0]}</span><span>${T.cols[2]}</span><span>${T.cols[3]}</span><span>${T.cols[4]}</span></div>${list.map(L => `<div class="tb-row"><button class="tb-n${VNh[L.ch] ? ' hasv' : ''}" data-n="${L.ch}"><span class="tb-l">${g(L.ch)}</span><small>${L.ru}</small></button>${['a','i','u'].map(h => { const s = syl(L.ch, h);
       return `<button class="tb-c${V[s]?' hasv':''}" data-v="${s}">${g(s)}</button>`; }).join('')}</div>`).join('')}</div>`;
   if(TBTAB === 0) body = `<p class="tb-hint">${T.hint}</p><div class="tb-rows">${half(LET.slice(0, 14))}${half(LET.slice(14))}</div>`;
   else if(TBTAB === 1) body = `<div class="tb-rules">${T.rules.map(([t, a, d]) => `<div class="tb-r${d.includes('rw') ? ' wide' : ''}"><b>${t}</b><div class="tb-ra" lang="ar" dir="rtl">${a}</div><small>${d}</small></div>`).join('')}</div>`;
@@ -800,9 +801,12 @@ function drawTable(){
   $('#tbBack').onclick = $('#tbMap').onclick = () => { sfx('tap'); location.hash = 'map'; };
   $$('#table .tb-tab').forEach(b => b.onclick = () => { TBTAB = +b.dataset.j; sfx('tap'); drawTable(); $('#table').scrollTop = 0; });
   $$('#table .tb-c').forEach(b => b.onclick = () => { bounceEl(b); if(!say(b.dataset.v)) sfx('pop'); });
-  $$('#table .tb-n').forEach(b => b.onclick = () => { bounceEl(b); const cells = [...b.parentNode.querySelectorAll('.tb-c')], q = cells.filter(c => V[c.dataset.v]);
-    if(!q.length){ sfx('pop'); return; } let n = 0; const next = () => { $$('#table .tb-c.on').forEach(c => c.classList.remove('on')); if(n >= q.length) return; const c = q[n++]; c.classList.add('on');
-      try { if(VA) VA.pause(); VA = new Audio(V[c.dataset.v]); VA.onended = () => setTimeout(next, 120); if(!MUTE) VA.play().catch(()=>{}); else setTimeout(next, 500); } catch(e){} }; next(); });
+  const VNm = window.VOICE_N || {};
+  $$('#table .tb-n').forEach(b => b.onclick = () => { bounceEl(b); const cells = [...b.parentNode.querySelectorAll('.tb-c')];
+    const q = [...(VNm[b.dataset.n] ? [[b, VNm[b.dataset.n]]] : []), ...cells.filter(c => V[c.dataset.v]).map(c => [c, V[c.dataset.v]])];
+    if(!q.length){ sfx('pop'); return; } const tok = (window.__tbq = (window.__tbq || 0) + 1); let n = 0;
+    const next = () => { if(tok !== window.__tbq) return; $$('#table .tb-c.on, #table .tb-n.on').forEach(c => c.classList.remove('on')); if(n >= q.length) return; const [el, src] = q[n++]; el.classList.add('on');
+      try { if(VA) VA.pause(); VA = new Audio(src); VA.onended = () => setTimeout(next, n === 1 ? 280 : 120); if(!MUTE) VA.play().catch(()=>{}); else setTimeout(next, 500); } catch(e){} }; next(); });
   if(TBTAB === 2){
     const show = () => { const units = TBJ.match(/[ء-ي][ً-ْ]*/g) || [];
       $('#tbJw').textContent = TBJ || '…'; $('#tbJl').innerHTML = units.map(u => `<span>${u}</span>`).join(''); };
