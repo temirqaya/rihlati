@@ -724,6 +724,7 @@ body.nw{background:linear-gradient(180deg,#D6ECE6 0%,#F3EEE2 62%)}
       <div class="me-ar">اللَّهُمَّ تَقَبَّلْ مِنَّا وَاجْعَلْهُ عِلْمًا نَافِعًا</div>
       <div class="me-name">Эльмаза Темиркалиева · 2026</div>
       <button class="btn soft me-about" id="toAbout"></button>
+      <a class="btn sage me-about" id="toWrite" href="https://temirqaya.github.io/temirqaya.github.io-aktubu-/" target="_blank" rel="noopener" style="display:table;margin:12px auto 0;text-decoration:none" hidden></a>
     </div>
   </div>
 
@@ -950,6 +951,7 @@ function drawMap(){
   $('#toTable').textContent = GT.table.btn; $('#toTable').onclick = () => { sfx('tap'); location.hash = 'table'; };
   if(RVT){ $('#toReview').textContent = RVT.btn; $('#toReview').onclick = () => { sfx('magic'); location.hash = 'review'; }; } else $('#toReview').hidden = true;
   $('#toAbout').textContent = GT.about.btn; $('#toAbout').onclick = () => { sfx('tap'); location.hash = 'about'; };
+  { const w = $('#toWrite'); if(w && (document.documentElement.lang||'').startsWith('ru')){ w.hidden = false; w.textContent = '\u270D Тренажёр письма'; } }
   $('#stones').innerHTML = LET.map((l,i)=>{ const n = SAVE[l.ch]||0;
     return `<button class="stone ${n>=5?'done':''}" data-i="${i}" aria-label="Буква ${l.ru}"><span class="num">${i+1}</span><span class="l">${g(l.ch)}</span><span class="n">${l.ru}</span><span class="st">${n?Array.from({length:5},(_,k)=>`<span class="${k<n?'on':'off'}">${STAR}</span>`).join(''):''}</span></button>`; }).join('');
   $$('#stones .stone').forEach(b => b.onclick = () => { sfx('tap'); location.hash = 'l-' + (+b.dataset.i + 1); });
