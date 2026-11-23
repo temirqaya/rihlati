@@ -263,6 +263,7 @@ h2{margin:0;font-weight:900;font-size:clamp(22px,3.4vw,38px);text-wrap:balance}
 .mc.up .mc-b{transform:rotateY(180deg)}.mc.up .mc-f{transform:rotateY(0)}
 .mc.ok .mc-f{border-color:var(--sage);background:var(--sage-l)}
 
+.ab-off{margin:14px 0 6px;text-align:center}.ab-off-n{font-size:13px;color:#7A5A52;margin-top:6px}
 .tb-open{display:flex;justify-content:center;margin:2px 0 6px}
 #table{position:relative;z-index:1;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;justify-content:center;align-items:flex-start;padding:8px 2px 30px}
 #table.wide .tb-card{width:min(100%,920px)}
@@ -625,6 +626,7 @@ body.nw{background:linear-gradient(180deg,#D6ECE6 0%,#F3EEE2 62%)}
 .nw-st-i svg{width:46px;height:46px;display:block}.nw-st-p svg{width:56px;height:auto;display:block}
 .nw-pair{display:flex;gap:3px}
 .nw-card-p{cursor:pointer}.nw-card-p.splash{animation:nwSplash .45s ease}@keyframes nwSplash{0%,100%{transform:scale(1)}40%{transform:scale(1.05)}}
+.rv-big .g{font-size:76px;line-height:1.3}.rv-ico svg{width:84px;height:84px}.tb-open{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .pqo .card.pic{padding:4px;min-height:0;display:grid;place-items:center}.pqo .card.pic svg{width:min(26vw,110px);height:auto;display:block;border-radius:14px}
 .ord-slots{display:flex;gap:5px;justify-content:center;flex-wrap:nowrap;margin:6px 0 10px;width:100%}.ord-slot{width:calc((100% - 20px) / 5);max-width:80px;aspect-ratio:3/4;border:2.5px dashed #BFD8CF;border-radius:14px;display:grid;place-items:center;color:#8FB5A8;font-weight:900;font-size:20px;overflow:hidden;background:#fff}
 .ord-slot.done{border-style:solid;border-color:var(--sage);padding:2px;align-content:start;gap:2px}.ord-slot svg{width:100%;height:auto;display:block;border-radius:10px}.ord-slot span{font-size:10px;font-weight:800;color:#2F6F67;line-height:1.1;text-align:center}
@@ -686,7 +688,7 @@ body.nw{background:linear-gradient(180deg,#D6ECE6 0%,#F3EEE2 62%)}
       <div><span class="ar">رِحْلَتِي مَعَ الْقُرْآنِ</span><h1>Моё путешествие к чтению Корана</h1><p>Выбери букву, и Зейнеб с Юсуфом начнут урок</p></div>
       <span id="mapM"></span>
     </div>
-    <div class="tb-open"><button class="btn soft" id="toTable"></button></div>
+    <div class="tb-open"><button class="btn soft" id="toTable"></button><button class="btn sage" id="toReview"></button></div>
     <div class="section-t"><span class="dot"></span>Раздел 1. Знакомимся с буквами</div>
     <div class="stones" id="stones"></div>
     <div class="section-t"><span class="dot" style="background:#C76A86"></span>Раздел 2. Волшебные огласовки</div>
@@ -899,13 +901,33 @@ function drawAbout(){
     <div class="ab-dua" lang="ar" dir="rtl">اللَّهُمَّ تَقَبَّلْ مِنَّا وَاجْعَلْهُ عِلْمًا نَافِعًا</div>
     <p class="ab-dua-t">${A.dua}</p>
     <div class="ab-name">${A.author} · 2026</div>${A.credit ? `<p class="ab-cr">${A.credit}</p>` : ''}
+    <div class="ab-off" id="abOff"></div>
     <button class="btn" id="abMap">${A.toMap}</button>
   </div>`;
   $('#abBack').onclick = $('#abMap').onclick = () => { sfx('tap'); location.hash = 'map'; };
+  drawOffline();
+}
+// ---------- звуки без интернета: скачать все записи в кэш телефона ----------
+const OFT = ({ru: {btn: '⬇ Скачать звуки на телефон', note: 'Около 6 МБ. После этого буквы, слова и суры звучат и без интернета.', go: 'Скачиваю…', ok: '✓ Звуки сохранены — работают без интернета', err: 'Не получилось. Проверь интернет и попробуй ещё раз.'},
+  crh: {btn: '⬇ Сеслерни телефонгъа юкле', note: 'Тахминен 6 МБ. Сонъ арифлер, сёзлер ве сурелер интернетсиз де сеслене.', go: 'Юклейим…', ok: '✓ Сеслер сакъланды — интернетсиз де чалышалар', err: 'Олмады. Интернетни тешкер ве даа бир кере денъе.'},
+  tr: {btn: '⬇ Sesleri telefona indir', note: 'Yaklaşık 6 MB. Sonra harfler, kelimeler ve sureler internetsiz de çalar.', go: 'İndiriliyor…', ok: '✓ Sesler kaydedildi — internetsiz de çalışır', err: 'Olmadı. İnterneti kontrol edip tekrar dene.'}})[document.documentElement.lang] || null;
+function audioUrls(){ const u = new Set(); [window.VOICE, window.VOICE_N, window.SONGS, window.MKH_V].forEach(m => m && Object.values(m).forEach(v => { if(typeof v === 'string' && /audio\//.test(v)) u.add(new URL(v, location.href).href); })); return [...u]; }
+function drawOffline(){
+  const box = $('#abOff'); if(!box) return; if(!OFT || !('caches' in window) || location.protocol === 'file:'){ box.hidden = true; return; }
+  const urls = audioUrls(); if(!urls.length){ box.hidden = true; return; }
+  box.innerHTML = `<button class="btn soft" id="offGo">${OFT.btn}</button><p class="ab-off-n" id="offN">${OFT.note}</p>`;
+  caches.open('rihlati-audio').then(c => c.keys()).then(ks => { if(ks.length >= urls.length){ $('#offN').textContent = OFT.ok; $('#offGo').hidden = true; } }).catch(()=>{});
+  $('#offGo').onclick = async () => { const b = $('#offGo'), n = $('#offN'); b.disabled = true; let done = 0, bad = 0;
+    try { const c = await caches.open('rihlati-audio');
+      for(const u of urls){ try { if(!(await c.match(u))){ const r = await fetch(u, {cache: 'no-cache'}); if(r.ok) await c.put(u, r); else bad++; } } catch(e){ bad++; }
+        done++; b.textContent = `${OFT.go} ${Math.round(done/urls.length*100)}%`; }
+      if(bad){ n.textContent = OFT.err; b.disabled = false; b.textContent = OFT.btn; } else { sfx('star'); n.textContent = OFT.ok; b.hidden = true; }
+    } catch(e){ n.textContent = OFT.err; b.disabled = false; b.textContent = OFT.btn; } };
 }
 function drawMap(){
   drawReset();
   $('#toTable').textContent = GT.table.btn; $('#toTable').onclick = () => { sfx('tap'); location.hash = 'table'; };
+  if(RVT){ $('#toReview').textContent = RVT.btn; $('#toReview').onclick = () => { sfx('magic'); location.hash = 'review'; }; } else $('#toReview').hidden = true;
   $('#toAbout').textContent = GT.about.btn; $('#toAbout').onclick = () => { sfx('tap'); location.hash = 'about'; };
   $('#stones').innerHTML = LET.map((l,i)=>{ const n = SAVE[l.ch]||0;
     return `<button class="stone ${n>=5?'done':''}" data-i="${i}" aria-label="Буква ${l.ru}"><span class="num">${i+1}</span><span class="l">${g(l.ch)}</span><span class="n">${l.ru}</span><span class="st">${n?Array.from({length:5},(_,k)=>`<span class="${k<n?'on':'off'}">${STAR}</span>`).join(''):''}</span></button>`; }).join('');
@@ -1036,7 +1058,7 @@ function go(i){
 $('#prev').onclick = () => go(cur-1);
 const NEXT_TXT = $('#next').textContent;
 $('#next').onclick = () => { if(cur===N-1){ if(NEXTH && NEXTH!=='map'){ sfx('tap'); location.hash = NEXTH; } } else go(cur+1); };
-$('#toMap').onclick = () => { location.hash = (MODE === 'P' && typeof PS !== 'undefined' && PS && PS.world) ? 'namaz' : 'map'; };
+$('#toMap').onclick = () => { location.hash = (MODE === 'P' && typeof PS !== 'undefined' && PS && PS.world === 'n') ? 'namaz' : 'map'; };
 document.addEventListener('keydown', e => { if($('#lesson').hidden) return; if(e.key==='ArrowRight') go(cur+1); if(e.key==='ArrowLeft') go(cur-1); });
 
 function bounceEl(el){ sfx('boing'); el.classList.remove('bounce'); void el.offsetWidth; el.classList.add('bounce'); }
@@ -1284,14 +1306,44 @@ function drawNamaz(){
   go.onclick = () => { sfx('tap'); location.hash = 'namaz'; };
   setTimeout(() => { kids.innerHTML = (CH.a_open || '') + (CH.m_open || '') + '<svg class="nw-rug" viewBox="0 0 200 30" aria-hidden="true"><rect x="6" y="6" width="188" height="18" rx="4" fill="#2F7F73"/><rect x="12" y="10" width="176" height="10" rx="3" fill="none" stroke="#D8B26A" stroke-width="2" stroke-dasharray="6 4"/></svg>'; }, 0);
 })();
+
+// ---------- повторение пройденного: случайные вопросы по уже пройденным буквам ----------
+const RVT = ({
+  ru: {btn: '🔁 Повторение', title: 'Повторение', lt: 'Буквы', h: 'Повторим пройденное!', what: 'Какая это буква?', find: 'Послушай и найди букву', starts: 'С какой буквы начинается слово',
+       fin: 'Машаллах! Ты хорошо помнишь буквы!', fm: 'Повторяй почаще — и буквы станут твоими друзьями.'},
+  crh: {btn: '🔁 Текрарлав', title: 'Текрарлав', lt: 'Арифлер', h: 'Огренгенимизни текрарлайыкъ!', what: 'Бу къайсы ариф?', find: 'Динъле ве арифни тап:', starts: 'Сёз къайсы арифтен башлана:',
+       fin: 'Машаллах! Сен арифлерни яхшы хатырлайсынъ!', fm: 'Сыкъ-сыкъ текрарла — арифлер сенинъ достларынъ олур.'},
+  tr: {btn: '🔁 Tekrar', title: 'Tekrar', lt: 'Harfler', h: 'Öğrendiklerimizi tekrar edelim!', what: 'Bu hangi harf?', find: 'Dinle ve harfi bul:', starts: 'Kelime hangi harfle başlıyor:',
+       fin: 'Maşallah! Harfleri çok iyi hatırlıyorsun!', fm: 'Sık sık tekrar et — harfler senin dostun olsun.'}
+})[document.documentElement.lang] || null;
+let RVI = -1;
+function makeReview(){
+  const T = RVT || {}; let learned = LET.filter(l => (SAVE[l.ch]||0) > 0);
+  if(learned.length < 4) learned = LET.slice(0, Math.max(4, learned.length));
+  const others = l => shuffle([...(l.sim||[]).map(c => byCh[c]).filter(x => x && x !== l), ...shuffle(LET.filter(x => x !== l))]).filter((x,j,a) => a.indexOf(x) === j);
+  const opts3 = l => { const o = [l, ...others(l).slice(0, 2)]; return o; };
+  const N_ = window.VOICE_N || {}, qs = [];
+  learned.forEach(l => {
+    const o = opts3(l);
+    qs.push({q: `<span class="arin rv-big">${g(l.ch)}</span><br>${T.what}`, opts: o.map(x => x.ru), ok: 0, ar: false});
+    qs.push({q: `${T.find} <b>«${l.ru}»</b>`, opts: o.map(x => x.ch), ok: 0, ar: true, snd: N_[l.ch] || ''});
+    if(!l.special && l.ico) qs.push({q: `<span class="rv-ico">${l.ico}</span><br>${T.starts} <b>«${l.word}»</b>?`, opts: opts3(l).map(x => x.ch), ok: 0, ar: true});
+  });
+  const S = {id: 'r', world: 'r', title: T.title, color: '#C9A15B', lessons: [{title: T.lt, icon: 'تَكْرَار',
+    screens: [{t: 'quiz', h: T.h, qs, pick: 10}, {t: 'final', a: T.fin, m: T.fm}]}]};
+  if(RVI < 0){ RVI = PL.sections.length; PL.sections.push(S); } else PL.sections[RVI] = S;
+  return RVI;
+}
 function route(){
   setTimeout(() => { const c = $('#cover'); document.body.classList.toggle('nwpage', !!(c && !c.hidden && c.classList.contains('paged') && c.scrollLeft > c.clientWidth / 2)); }, 0);
   $('#about').hidden = true; $('#table').hidden = true; $('#namaz').hidden = true;
-  { const pm0 = /^#p(\d)-/.exec(location.hash); document.body.classList.toggle('nw', location.hash === '#namaz' || !!(pm0 && PL.sections[+pm0[1]] && PL.sections[+pm0[1]].world)); }
+  { const pm0 = /^#p(\d)-/.exec(location.hash); document.body.classList.toggle('nw', location.hash === '#namaz' || !!(pm0 && PL.sections[+pm0[1]] && PL.sections[+pm0[1]].world === 'n')); }
   const m = /^#l-(\d+)$/.exec(location.hash);
   const i = m ? +m[1]-1 : -1;
   const hm = /^#([htm])-(\d+)$/.exec(location.hash), hid = hm ? hm[1] : '', hi = hm ? +hm[2]-1 : -1;
+  if(location.hash === '#review'){ location.replace('#p' + makeReview() + '-1'); return; }
   const pm = /^#p(\d)-(\d+)$/.exec(location.hash);
+  if(pm && RVI < 0 && +pm[1] === PL.sections.length) makeReview();
   if(pm && PL.sections[+pm[1]] && PL.sections[+pm[1]].lessons[+pm[2]-1]){ $('#map').hidden = true; $('#cover').hidden = true; $('#lesson').hidden = false; buildP(+pm[1], +pm[2]-1); go(0); return; }
   const sm = /^#s-(\d+)$/.exec(location.hash), si = sm ? +sm[1]-1 : -1;
   if(si>=0 && si<SKL.length){ $('#map').hidden = true; $('#cover').hidden = true; $('#lesson').hidden = false; buildSk(si); go(0); }

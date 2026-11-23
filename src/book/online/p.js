@@ -27,7 +27,7 @@ function buildP(si, li){
   STEPS = SC.map((s,k) => s.star ? k : -1).filter(k => k >= 0);
   AGAIN = () => { buildP(si, li); go(0); };
   const sameW = j => PL.sections[j] && (PL.sections[j].world || '') === (PS.world || '');
-  NEXTH = li < PS.lessons.length-1 ? `p${si}-${li+2}` : (sameW(si+1) ? `p${si+1}-1` : (PS.world ? 'namaz' : 'about'));
+  NEXTH = li < PS.lessons.length-1 ? `p${si}-${li+2}` : (PS.world === 'r' ? 'map' : sameW(si+1) ? `p${si+1}-1` : (PS.world ? 'namaz' : 'about'));
   const [s1, s2] = speaker(li);
   const hero = (who, kind) => CH[who + '_' + kind];
   const nextT = li < PS.lessons.length-1 ? PS.lessons[li+1].title : (sameW(si+1) ? PL.sections[si+1].lessons[0].title : '');
@@ -38,7 +38,7 @@ function buildP(si, li){
   drawStars($('#stars'));
   $$('[data-go]').forEach(b => b.onclick = () => go(+b.dataset.go));
   const ag = $('#again'); if(ag) ag.onclick = () => AGAIN();
-  const tm = $('#toMap2'); if(tm) tm.onclick = () => { location.hash = PS.world ? 'namaz' : 'map'; };
+  const tm = $('#toMap2'); if(tm) tm.onclick = () => { location.hash = PS.world === 'n' ? 'namaz' : 'map'; };
   const nl = $('#nextLetter'); if(nl) nl.onclick = () => { location.hash = NEXTH; };
 }
 
@@ -171,6 +171,7 @@ function enterP(i){
     let n = 0; const order = shuffle(s.qs.map((_,j)=>j)).slice(0, s.pick || s.qs.length); const TOT = order.length;
     const draw = () => { if(!$(`#pqH${k}`) || PLs.screens[k] !== s) return; const Q = s.qs[order[n]]; $(`#pqH${k}`).textContent = ''; $(`#pqN${k}`).textContent = `Вопрос ${n+1} из ${TOT}`;
       $(`#pqQ${k}`).innerHTML = Q.q;
+      if(Q.snd && !MUTE){ try { if(VA) VA.pause(); VA = new Audio(Q.snd); VA.play().catch(()=>{}); } catch(e){} }
       $(`#pqO${k}`).innerHTML = shuffle(Q.opts.map((o,j)=>[o,j])).map(([o,j]) => `<button class="card ${Q.pic?'pic':(Q.ar?'':'txt')}" data-j="${j}">${Q.ar ? g(o) : o}</button>`).join('');
       $$(`#pqO${k} .card`).forEach(c => c.onclick = () => { const h = $(`#pqH${k}`);
         if(+c.dataset.j === Q.ok){ sfx('ok'); c.classList.add('ok'); h.style.color = 'var(--sage)'; h.innerHTML = 'Правильно! Машаллах!' + (Q.why ? ' ' + Q.why : '');
@@ -319,6 +320,7 @@ function enterP(i){
   if(s.t === 'diploma'){
     let nm = ''; try { nm = localStorage.getItem('rihlati-name') || ''; } catch(e){}
     const inp = $('#dipName'); inp.value = nm;
+    const D = $(`#dip${k}`); if(s.sub){ D.querySelector('.dip-s').textContent = s.sub; } if(s.ar2){ D.querySelector('.dip-ar2').textContent = s.ar2; } if(s.txt){ D.querySelector('p').textContent = s.txt; }
     inp.oninput = () => { try { localStorage.setItem('rihlati-name', inp.value); } catch(e){} };
     $('#dipOk').onclick = () => { sfx('fanfare'); confetti(160); bounceEl($(`#dip${k}`)); award(i); };
   }
