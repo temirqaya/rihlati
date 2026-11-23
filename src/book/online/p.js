@@ -52,6 +52,7 @@ function renderP(s, k, s1, s2, hero, nextT){
     case 'read': return `${side('m', s.hint, 'book')}<div class="grid pread ${s.cls||''}" id="pr${k}"></div><div class="row"><span class="count" id="prN${k}"></span><button class="btn" id="prNext${k}">Дальше</button></div>`;
     case 'mstep': return `<h2>${s.h}</h2><div class="mth mstep"><div class="ms-svg mwrap" id="msS${k}">${s.svg}<div class="mlay"></div></div><div class="ms-card" id="msC${k}"></div></div><div class="row"><span class="count" id="msN${k}"></span><button class="btn" id="msNext${k}">Следующая буква →</button></div>`;
     case 'mouth': return `<h2>${s.h}</h2><div class="mth mth-play"><div class="mwrap" id="mS${k}">${s.svg}<div class="mlay"></div><div class="mhand"><span>👆</span><b>${GT.tap}</b></div></div><div class="mth-p" id="mP${k}"><p class="lead">${s.tip||''}</p></div></div><div class="count" id="mN${k}"></div>`;
+    case 'order': return `<h2>${s.h}</h2><p class="lead">${s.hint}</p><div class="ord-slots" id="ordS${k}">${s.items.map((_,j)=>`<div class="ord-slot"><b>${j+1}</b></div>`).join('')}</div><div class="ord-pool" id="ordP${k}"></div><div class="hint" id="ordH${k}"></div>`;
     case 'quiz': return `<h2>${s.h}</h2><div class="bubble pq" id="pqQ${k}"></div><div class="cards pqo" id="pqO${k}"></div><div class="hint" id="pqH${k}"></div><div class="count" id="pqN${k}"></div>`;
     case 'build': return `<h2>${s.h}</h2><div class="pb-mean" id="pbM${k}"></div><div class="pb-word" id="pbW${k}"></div><div class="cards pb-parts" id="pbP${k}"></div><div class="hint" id="pbH${k}"></div><div class="row"><span class="count" id="pbN${k}"></span><button class="btn" id="pbNext${k}" hidden>Следующее слово</button></div>`;
     case 'examples': return `<h2>${s.h}</h2><div class="pex">${s.items.map(e=>`<button class="pex-i"><span class="arin q">${e.ar}</span><small>${e.lab}</small></button>`).join('')}</div>${side('a','Прочитай каждый пример вместе с учителем. Нажми на карточку — она подпрыгнет!')}<button class="btn" id="pexDone${k}">Прочитали!</button>`;
@@ -158,15 +159,23 @@ function enterP(i){
       $(`#mP${k}`).innerHTML = `<div class="mg big"><span class="mg-t">${Z.n}</span><small>${Z.d}</small></div>`;
       $(`#mN${k}`).innerHTML = `<b>${seen.size}</b> / ${tot}`; if(seen.size >= s.need) award(i); });
   }
+  if(s.t === 'order'){
+    let n = 0; const P = $(`#ordP${k}`), S = $$(`#ordS${k} .ord-slot`);
+    P.innerHTML = shuffle(s.items.map((it,j)=>[it,j])).map(([it,j]) => `<button class="ord-it" data-j="${j}">${it.html}<span>${it.label}</span></button>`).join('');
+    $$(`#ordP${k} .ord-it`).forEach(b => b.onclick = () => {
+      if(+b.dataset.j === n){ sfx('ok'); S[n].innerHTML = b.innerHTML; S[n].classList.add('done'); b.classList.add('used'); b.disabled = true; n++;
+        if(n >= s.items.length){ const h = $(`#ordH${k}`); h.style.color = 'var(--sage)'; h.textContent = s.done; confetti(60); if(s.star) award(i); } }
+      else shakeEl(b); });
+  }
   if(s.t === 'quiz'){
-    let n = 0; const order = shuffle(s.qs.map((_,j)=>j));
-    const draw = () => { if(!$(`#pqH${k}`) || PLs.screens[k] !== s) return; const Q = s.qs[order[n]]; $(`#pqH${k}`).textContent = ''; $(`#pqN${k}`).textContent = `Вопрос ${n+1} из ${s.qs.length}`;
+    let n = 0; const order = shuffle(s.qs.map((_,j)=>j)).slice(0, s.pick || s.qs.length); const TOT = order.length;
+    const draw = () => { if(!$(`#pqH${k}`) || PLs.screens[k] !== s) return; const Q = s.qs[order[n]]; $(`#pqH${k}`).textContent = ''; $(`#pqN${k}`).textContent = `Вопрос ${n+1} из ${TOT}`;
       $(`#pqQ${k}`).innerHTML = Q.q;
-      $(`#pqO${k}`).innerHTML = shuffle(Q.opts.map((o,j)=>[o,j])).map(([o,j]) => `<button class="card ${Q.ar?'':'txt'}" data-j="${j}">${Q.ar ? g(o) : o}</button>`).join('');
+      $(`#pqO${k}`).innerHTML = shuffle(Q.opts.map((o,j)=>[o,j])).map(([o,j]) => `<button class="card ${Q.pic?'pic':(Q.ar?'':'txt')}" data-j="${j}">${Q.ar ? g(o) : o}</button>`).join('');
       $$(`#pqO${k} .card`).forEach(c => c.onclick = () => { const h = $(`#pqH${k}`);
         if(+c.dataset.j === Q.ok){ sfx('ok'); c.classList.add('ok'); h.style.color = 'var(--sage)'; h.innerHTML = 'Правильно! Машаллах!' + (Q.why ? ' ' + Q.why : '');
           $$(`#pqO${k} .card`).forEach(x => x.disabled = true);
-          n++; if(n >= s.qs.length){ $(`#pqN${k}`).textContent = 'Все вопросы пройдены!'; if(s.star) award(i); } else setTimeout(draw, 1400); }
+          n++; if(n >= TOT){ $(`#pqN${k}`).textContent = 'Все вопросы пройдены!'; if(s.star) award(i); } else setTimeout(draw, 1400); }
         else { shakeEl(c); h.style.color = 'var(--rose)'; h.textContent = 'Подумай ещё — у тебя получится!'; } }); };
     draw();
   }

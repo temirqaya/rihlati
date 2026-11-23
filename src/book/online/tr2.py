@@ -125,7 +125,7 @@ JS_V = [
  ">Diplomamı al!</button>",
  "`${page+1} / ${pages}`",
  "page < pages-1 ? 'İleri' : 'Okuduk!'",
- "`Soru ${n+1} / ${s.qs.length}`",
+ "`Soru ${n+1} / ${TOT}`",
  "'Bütün sorular bitti!'",
  "'Bir daha düşün — başarabilirsin!'",
  "`Kelime ${n+1} / ${s.items.length}`",
