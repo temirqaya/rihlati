@@ -2063,20 +2063,30 @@ const RVT = ({
        fin: 'Maşallah! Harfleri çok iyi hatırlıyorsun!', fm: 'Sık sık tekrar et — harfler senin dostun olsun.'}
 })[document.documentElement.lang] || null;
 let RVI = -1;
+const RVF = ({ru: 'Какая буква спряталась в слове?', crh: 'Сёз ичинде бу къайсы ариф?', tr: 'Kelime içinde bu hangi harf?'})[document.documentElement.lang] || 'Какая буква спряталась в слове?';
 function makeReview(){
   const T = RVT || {}; let learned = LET.filter(l => (SAVE[l.ch]||0) > 0);
-  if(learned.length < 4) learned = LET.slice(0, Math.max(4, learned.length));
+  if(learned.length < 6) learned = LET.slice(0, Math.max(6, learned.length));
   const others = l => shuffle([...(l.sim||[]).map(c => byCh[c]).filter(x => x && x !== l), ...shuffle(LET.filter(x => x !== l))]).filter((x,j,a) => a.indexOf(x) === j);
   const opts3 = l => { const o = [l, ...others(l).slice(0, 2)]; return o; };
+  const NC = 'اأإآءدذرزو', TW = 'ـ';
   const N_ = window.VOICE_N || {}, qs = [];
   learned.forEach(l => {
-    const o = opts3(l);
-    qs.push({q: `<span class="arin rv-big">${g(l.ch)}</span><br>${T.what}`, opts: o.map(x => x.ru), ok: 0, ar: false});
-    qs.push({q: `${T.find} <b>«${l.ru}»</b>`, opts: o.map(x => x.ch), ok: 0, ar: true, snd: N_[l.ch] || ''});
-    if(!l.special && l.ico) qs.push({q: `<span class="rv-ico">${l.ico}</span><br>${T.starts} <b>«${l.word}»</b>?`, opts: opts3(l).map(x => x.ch), ok: 0, ar: true});
+    qs.push({key: 'w'+l.ch, q: `<span class="arin rv-big">${g(l.ch)}</span><br>${T.what}`, opts: opts3(l).map(x => x.ru), ok: 0, ar: false});
+    qs.push({key: 'f'+l.ch, q: `${T.find} <b>«${l.ru}»</b>`, opts: opts3(l).map(x => x.ch), ok: 0, ar: true, snd: N_[l.ch] || ''});
+    if(!l.special && l.ico) qs.push({key: 's'+l.ch, q: `<span class="rv-ico">${l.ico}</span><br>${T.starts} <b>«${l.word}»</b>?`, opts: opts3(l).map(x => x.ch), ok: 0, ar: true});
+    if(!l.special && l.ch.length === 1){
+      const forms = NC.includes(l.ch) ? [TW+l.ch] : [l.ch+TW, TW+l.ch+TW, TW+l.ch];
+      forms.forEach((fm, j) => qs.push({key: 'm'+j+l.ch, q: `<span class="arin rv-big">${g(fm)}</span><br>${RVF}`, opts: opts3(l).map(x => x.ru), ok: 0, ar: false}));
+    }
   });
+  // каждый раз новые вопросы: сначала те, которых не было в прошлые разы
+  let recent = []; try { recent = JSON.parse(localStorage.getItem('rihlati-rv-recent') || '[]'); } catch(e){}
+  const N = Math.min(10, qs.length);
+  const chosen = [...shuffle(qs.filter(q => !recent.includes(q.key))), ...shuffle(qs.filter(q => recent.includes(q.key)))].slice(0, N);
+  try { localStorage.setItem('rihlati-rv-recent', JSON.stringify([...chosen.map(q => q.key), ...recent.filter(k => !chosen.some(q => q.key === k))].slice(0, Math.max(0, qs.length - N)))); } catch(e){}
   const S = {id: 'r', world: 'r', title: T.title, color: '#C9A15B', lessons: [{title: T.lt, icon: 'تَكْرَار',
-    screens: [{t: 'quiz', h: T.h, qs, pick: 10}, {t: 'final', a: T.fin, m: T.fm}]}]};
+    screens: [{t: 'quiz', h: T.h, qs: shuffle(chosen), pick: N}, {t: 'final', a: T.fin, m: T.fm}]}]};
   if(RVI < 0){ RVI = PL.sections.length; PL.sections.push(S); } else PL.sections[RVI] = S;
   return RVI;
 }
